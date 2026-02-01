@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import datetime
 import json
 import logging
 import pathlib
@@ -24,6 +25,9 @@ import sys
 import pymupdf4llm
 
 logger = logging.getLogger(__name__)
+
+# Script metadata
+SCRIPT_VERSION = "1.0.0"
 
 # Default paths relative to this script's location
 SCRIPT_DIR = pathlib.Path(__file__).parent
@@ -569,6 +573,8 @@ def validate_chapters(
     total_garbled = sum(r["garbled_count"] for r in chapter_results)
 
     report = {
+        "script_version": SCRIPT_VERSION,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "chapters": chapter_results,
         "summary": {
             "total_chapters": len(chapter_results),
@@ -601,6 +607,60 @@ def validate_chapters(
     )
 
     return report
+
+
+def print_quality_summary(report: dict) -> None:
+    """Print a human-readable quality validation summary to stdout.
+
+    Displays per-chapter validation status, summary statistics, and
+    content coverage information in a formatted table.
+
+    Args:
+        report: Quality report dict from :func:`validate_chapters`.
+    """
+    summary = report["summary"]
+    coverage = report["coverage"]
+    chapters = report["chapters"]
+
+    print(f"\n{'=' * 70}")
+    print(f"  QUALITY VALIDATION REPORT  (v{report.get('script_version', '?')})")
+    print(f"{'=' * 70}")
+    print(f"  Timestamp: {report.get('timestamp', 'N/A')}")
+    print()
+
+    # Per-chapter table
+    print(f"  {'#':<5} {'Status':<8} {'Title':<35} {'Chars':>8} {'Diacr.':>8}")
+    print(f"  {'-' * 5} {'-' * 8} {'-' * 35} {'-' * 8} {'-' * 8}")
+    for ch in chapters:
+        status = "✓ OK" if ch["valid"] else "✗ FAIL"
+        title = ch["title"][:34] if len(ch["title"]) > 34 else ch["title"]
+        print(
+            f"  {ch['index']:<5} {status:<8} {title:<35} "
+            f"{ch['char_count']:>8,} {ch['diacritic_count']:>8,}"
+        )
+        for issue in ch["issues"]:
+            print(f"         ↳ {issue}")
+
+    # Summary
+    print(f"\n  {'─' * 70}")
+    print(f"  Chapters:   {summary['total_chapters']} total, "
+          f"{summary['valid_chapters']} valid, "
+          f"{summary['invalid_chapters']} with issues")
+    print(f"  Characters: {summary['total_characters']:,} extracted")
+    print(f"  Diacritics: {summary['total_diacritics']:,} Vietnamese diacritical chars")
+    if summary["total_garbled"] > 0:
+        print(f"  ⚠ Garbled:  {summary['total_garbled']} replacement/control chars found")
+    print(f"  Coverage:   {coverage['extracted_chars']:,} / {coverage['full_text_chars']:,} "
+          f"chars ({coverage['coverage_pct']:.1f}%)")
+
+    # Overall verdict
+    all_valid = summary["invalid_chapters"] == 0
+    print(f"\n  {'─' * 70}")
+    if all_valid:
+        print("  ✓ ALL CHAPTERS PASSED VALIDATION")
+    else:
+        print(f"  ✗ {summary['invalid_chapters']} CHAPTER(S) HAVE ISSUES")
+    print(f"{'=' * 70}\n")
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -756,7 +816,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     logger.info("Quality report written to %s", report_path)
 
-    # TODO(subtask-3-2): Enhanced quality report with human-readable summary
+    # Print human-readable quality summary to stdout
+    print_quality_summary(quality_report)
 
     logger.info("Conversion complete: %d chapters written to %s", len(written_files), args.output_dir)
     return 0
