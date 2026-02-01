@@ -389,6 +389,13 @@ def write_chapters(
         List of paths to written files.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Remove stale chapter files from previous runs to ensure idempotency.
+    # Only removes files matching our naming convention (chapter-*.md).
+    for stale in sorted(output_dir.glob("chapter-*.md")):
+        stale.unlink()
+        logger.debug("Removed stale file: %s", stale.name)
+
     logger.info("Writing %d chapter(s) to %s", len(chapters), output_dir)
 
     written_files: list[pathlib.Path] = []
