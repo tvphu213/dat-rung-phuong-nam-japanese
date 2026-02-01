@@ -11,9 +11,13 @@ Usage:
     python convert.py --help
 """
 
+from __future__ import annotations
+
 import argparse
+import dataclasses
 import logging
 import pathlib
+import re
 import sys
 
 import pymupdf4llm
@@ -24,6 +28,232 @@ logger = logging.getLogger(__name__)
 SCRIPT_DIR = pathlib.Path(__file__).parent
 DEFAULT_PDF_PATH = SCRIPT_DIR.parent.parent.parent / "517016593-ĐẤT-RỪNG-PHƯƠNG-NAM.pdf"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "chapters"
+
+# ---------------------------------------------------------------------------
+# Chapter detection
+# ---------------------------------------------------------------------------
+
+# Regex patterns for Vietnamese chapter headers.  The patterns are tried in
+# order; the first branch that matches wins.  All matching is case-insensitive
+# so "Chương" and "CHƯƠNG" are handled uniformly.
+#
+# Supported formats:
+#   Chương 1 / Chương 12          – Arabic numerals
+#   CHƯƠNG IV / Chương IX          – Roman numerals
+#   Chương một / Chương mười hai   – Vietnamese number words
+#
+# The regex captures:
+#   group "label"  – full matched header text (e.g. "Chương 3")
+#   group "num"    – the numeric/roman/word token following "Chương"
+_VIET_NUMBER_WORDS = (
+    r"một|hai|ba|bốn|năm|sáu|bảy|tám|chín|mười"
+    r"|mười\s+một|mười\s+hai|mười\s+ba|mười\s+bốn|mười\s+năm"
+    r"|mười\s+sáu|mười\s+bảy|mười\s+tám|mười\s+chín"
+    r"|hai\s+mươi|hai\s+mươi\s+\w+"
+    r"|ba\s+mươi|ba\s+mươi\s+\w+"
+)
+
+CHAPTER_HEADER_RE = re.compile(
+    r"(?P<label>"
+    r"[Cc][Hh][Ưư][Ơơ][Nn][Gg]"       # "Chương" in any case
+    r"\s+"
+    r"(?P<num>"
+    r"\d+"                               # Arabic numerals
+    r"|[IVXLCDM]+"                       # Roman numerals (uppercase)
+    r"|" + _VIET_NUMBER_WORDS +          # Vietnamese number words
+    r")"
+    r")",
+    re.IGNORECASE,
+)
+
+# Secondary pattern: bold / heading Markdown artefacts that pymupdf4llm may
+# wrap around chapter headers (e.g. "## Chương 3" or "**Chương 3**").
+# We strip these when extracting the clean title.
+_MD_HEADING_PREFIX_RE = re.compile(r"^#{1,6}\s*")
+_MD_BOLD_RE = re.compile(r"\*{1,2}(.*?)\*{1,2}")
+
+
+@dataclasses.dataclass
+class Chapter:
+    """A single detected chapter with its content boundaries."""
+
+    index: int          # 0-based sequential index
+    title: str          # Cleaned chapter title (may be multi-line)
+    start: int          # Character offset in full_text (inclusive)
+    end: int            # Character offset in full_text (exclusive)
+
+    @property
+    def body(self) -> str:
+        """Return placeholder; actual text is sliced externally."""
+        return ""
+
+    @property
+    def char_count(self) -> int:
+        return self.end - self.start
+
+
+def _clean_title(raw: str) -> str:
+    """Strip Markdown artefacts from a chapter title line.
+
+    Removes leading ``#`` heading markers and surrounding ``**`` bold markers
+    while preserving the actual title text.
+    """
+    title = _MD_HEADING_PREFIX_RE.sub("", raw).strip()
+    # Unwrap bold markers: **Chương 1** → Chương 1
+    bold_match = _MD_BOLD_RE.fullmatch(title)
+    if bold_match:
+        title = bold_match.group(1).strip()
+    return title
+
+
+def _extract_multiline_title(full_text: str, header_end: int, max_extra_lines: int = 2) -> str:
+    """Capture additional title lines immediately following the chapter header.
+
+    Some chapters have a subtitle on the next line(s).  We greedily grab up to
+    *max_extra_lines* non-blank lines that look like title continuations (short
+    and not starting a paragraph).
+
+    Args:
+        full_text: The entire document text.
+        header_end: Character offset right after the chapter header match.
+        max_extra_lines: Maximum number of continuation lines to absorb.
+
+    Returns:
+        The extra title text (may be empty string).
+    """
+    extra_parts: list[str] = []
+    pos = header_end
+
+    for _ in range(max_extra_lines):
+        # Skip a single newline
+        if pos < len(full_text) and full_text[pos] == "\n":
+            pos += 1
+        # Read next line
+        line_end = full_text.find("\n", pos)
+        if line_end == -1:
+            line_end = len(full_text)
+        line = full_text[pos:line_end].strip()
+
+        # A continuation line must be non-empty, relatively short (<120 chars),
+        # and not look like a regular paragraph start (no lowercase first word
+        # following normal sentence structure – heuristic).
+        if not line or len(line) > 120:
+            break
+        # If the line contains a new chapter header, stop
+        if CHAPTER_HEADER_RE.search(line):
+            break
+        # If line looks like body text (starts lowercase and is long), stop
+        if len(line) > 60 and line[0].islower():
+            break
+
+        extra_parts.append(_clean_title(line))
+        pos = line_end + 1
+
+    return " — ".join(extra_parts) if extra_parts else ""
+
+
+def detect_chapters(full_text: str) -> list[Chapter]:
+    """Detect chapter boundaries in the full document text.
+
+    Strategy:
+    1. Find all matches of ``CHAPTER_HEADER_RE`` in *full_text*.
+    2. Any text before the first match is treated as a **prologue**.
+    3. Any text after the last chapter header (beyond expected body) is kept
+       as part of the last chapter (epilogue content is not split separately
+       unless a clear header is found).
+    4. Multi-line titles are captured via ``_extract_multiline_title``.
+
+    Args:
+        full_text: Combined Markdown text of the entire PDF.
+
+    Returns:
+        Ordered list of :class:`Chapter` objects.  The list is never empty;
+        if no chapter headers are found the entire text is returned as a
+        single "Full Document" chapter.
+    """
+    matches = list(CHAPTER_HEADER_RE.finditer(full_text))
+
+    if not matches:
+        logger.warning("No chapter headers detected – returning full document as single chapter")
+        return [
+            Chapter(index=0, title="Full Document", start=0, end=len(full_text)),
+        ]
+
+    chapters: list[Chapter] = []
+
+    # --- Prologue (text before the first chapter header) ---
+    first_match_start = matches[0].start()
+    prologue_text = full_text[:first_match_start].strip()
+    if len(prologue_text) > 200:
+        # Only create a prologue chapter if there is substantial content
+        chapters.append(
+            Chapter(index=0, title="Lời mở đầu", start=0, end=first_match_start)
+        )
+        logger.info("Prologue detected: %d characters", first_match_start)
+
+    # --- Regular chapters ---
+    for i, match in enumerate(matches):
+        # Determine where this chapter's content ends
+        if i + 1 < len(matches):
+            chapter_end = matches[i + 1].start()
+        else:
+            chapter_end = len(full_text)
+
+        # Build the title from the header match + optional continuation lines
+        header_line_end = full_text.find("\n", match.end())
+        if header_line_end == -1:
+            header_line_end = len(full_text)
+
+        raw_header_line = full_text[match.start():header_line_end]
+        title = _clean_title(raw_header_line)
+
+        extra_title = _extract_multiline_title(full_text, header_line_end)
+        if extra_title:
+            title = f"{title} — {extra_title}"
+
+        chapter_index = len(chapters)
+        chapters.append(
+            Chapter(
+                index=chapter_index,
+                title=title,
+                start=match.start(),
+                end=chapter_end,
+            )
+        )
+
+    logger.info("Detected %d chapter(s) (including prologue)" if chapters[0].title == "Lời mở đầu"
+                else "Detected %d chapter(s)", len(chapters))
+
+    return chapters
+
+
+def print_chapter_summary(chapters: list[Chapter], full_text: str) -> None:
+    """Print a human-readable summary of detected chapters.
+
+    Used by ``--dry-run`` to show what would be generated without writing files.
+
+    Args:
+        chapters: List of detected chapters.
+        full_text: The full document text (used for character counts).
+    """
+    total_chars = sum(ch.char_count for ch in chapters)
+    print(f"\n{'=' * 65}")
+    print(f"  CHAPTER DETECTION SUMMARY")
+    print(f"{'=' * 65}")
+    print(f"  Total chapters detected: {len(chapters)}")
+    print(f"  Total characters:        {total_chars:,}")
+    print(f"  Full text length:        {len(full_text):,}")
+    coverage = (total_chars / len(full_text) * 100) if full_text else 0
+    print(f"  Coverage:                {coverage:.1f}%")
+    print(f"{'=' * 65}\n")
+    print(f"  {'#':<5} {'Title':<45} {'Chars':>10}")
+    print(f"  {'-' * 5} {'-' * 45} {'-' * 10}")
+    for ch in chapters:
+        idx_str = str(ch.index)
+        title_display = ch.title[:44] if len(ch.title) > 44 else ch.title
+        print(f"  {idx_str:<5} {title_display:<45} {ch.char_count:>10,}")
+    print(f"\n  {'TOTAL':<51} {total_chars:>10,}")
+    print()
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -151,12 +381,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     logger.info("Full document: %d characters across %d pages", len(full_text), len(chunks))
 
-    # TODO(subtask-2-2): Chapter detection and splitting
+    # Chapter detection and splitting
+    chapters = detect_chapters(full_text)
+    if not chapters:
+        logger.error("No chapters detected – aborting")
+        return 1
+
+    if args.dry_run:
+        print_chapter_summary(chapters, full_text)
+        logger.info("Dry run complete – no files written")
+        return 0
+
     # TODO(subtask-2-3): Markdown file output with cleanup
     # TODO(subtask-3-1): Quality validation
     # TODO(subtask-3-2): Quality report generation
 
-    logger.info("Extraction complete")
+    logger.info("Conversion complete: %d chapters", len(chapters))
     return 0
 
 
