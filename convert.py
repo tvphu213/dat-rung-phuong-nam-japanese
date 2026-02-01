@@ -31,7 +31,7 @@ SCRIPT_VERSION = "1.0.0"
 
 # Default paths relative to this script's location
 SCRIPT_DIR = pathlib.Path(__file__).parent
-DEFAULT_PDF_PATH = SCRIPT_DIR.parent.parent.parent / "517016593-ĐẤT-RỪNG-PHƯƠNG-NAM.pdf"
+DEFAULT_PDF_PATH = SCRIPT_DIR / "517016593-ĐẤT-RỪNG-PHƯƠNG-NAM.pdf"
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "chapters"
 
 # ---------------------------------------------------------------------------
@@ -281,10 +281,10 @@ _HEADER_FOOTER_RE = re.compile(
     re.MULTILINE | re.IGNORECASE,
 )
 
-# Hyphenated words split across lines (e.g. "thuyền-\nbuồm" → "thuyềnbuồm"
-# is wrong; we want "thuyền buồm" only when the hyphen is a soft-hyphen /
-# line-break artefact).  We detect a word-char followed by a hyphen at end of
-# line, then whitespace + lowercase continuation.
+# Hyphenated words split across lines (e.g. "thuyền-\nbuồm" → "thuyền buồm").
+# In Vietnamese, line-break hyphens typically separate distinct monosyllabic
+# words, so we rejoin with a space.  We detect a word-char followed by a hyphen
+# at end of line, then whitespace + lowercase continuation.
 _HYPHEN_SPLIT_RE = re.compile(
     r"(\w)-\s*\n\s*([a-zàáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ])",
     re.UNICODE,
@@ -325,8 +325,8 @@ def clean_chapter_text(raw_text: str) -> str:
     # 3. Strip decorative separators
     text = _DECORATIVE_LINE_RE.sub("", text)
 
-    # 4. Rejoin hyphenated words
-    text = _HYPHEN_SPLIT_RE.sub(r"\1\2", text)
+    # 4. Rejoin hyphenated words (with space – Vietnamese monosyllabic words)
+    text = _HYPHEN_SPLIT_RE.sub(r"\1 \2", text)
 
     # 5. Collapse excessive blank lines (keep max one blank line between paragraphs)
     text = _EXCESS_BLANKS_RE.sub("\n\n", text)
@@ -340,7 +340,7 @@ def clean_chapter_text(raw_text: str) -> str:
 def _slugify_title(title: str, max_len: int = 40) -> str:
     """Create a filesystem-safe slug from a chapter title.
 
-    Converts Vietnamese characters to a simplified form for filenames.
+    Keeps Vietnamese (Unicode) characters in filenames for readability.
     Only used to make filenames more readable; the canonical identifier
     is the zero-padded chapter number.
 
@@ -416,9 +416,16 @@ def write_chapters(
 
         file_path = output_dir / filename
 
-        # Build Markdown content: H1 title + body
-        # Remove the chapter header from body if it starts with it (avoid duplication)
-        # since we add it as H1
+        # Remove the chapter header from body to avoid duplication with H1
+        body_lines = body.split('\n')
+        while body_lines and CHAPTER_HEADER_RE.search(body_lines[0]):
+            body_lines.pop(0)
+        # Remove leading blank lines after header removal
+        while body_lines and not body_lines[0].strip():
+            body_lines.pop(0)
+        body = '\n'.join(body_lines)
+
+        # Build Markdown content: H1 title + cleaned body
         md_content = f"# {chapter.title}\n\n{body}\n"
 
         file_path.write_text(md_content, encoding="utf-8")
