@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import json
 import logging
 import pathlib
 import re
@@ -422,6 +423,186 @@ def write_chapters(
     return written_files
 
 
+# ---------------------------------------------------------------------------
+# Quality validation
+# ---------------------------------------------------------------------------
+
+# Vietnamese diacritical characters (lowercase + uppercase).  Used to verify
+# that text extraction preserved Vietnamese encoding correctly.
+_VIETNAMESE_DIACRITICS_RE = re.compile(
+    r"[àáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ"
+    r"ÀÁẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬĐÈÉẺẼẸÊẾỀỂỄỆÌÍỈĨỊÒÓỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÙÚỦŨỤƯỨỪỬỮỰỲÝỶỸỴ]",
+)
+
+# Garbled / problematic characters: U+FFFD (replacement character) and
+# ASCII control characters (excluding tab, newline, carriage return).
+_GARBLED_CHARS_RE = re.compile(r"[\ufffd\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+# Minimum character count for a chapter body to be considered non-empty.
+_MIN_CHAPTER_CHARS = 100
+
+# Minimum number of Vietnamese diacritical characters expected per chapter.
+_MIN_DIACRITIC_COUNT = 10
+
+# Chapters below this threshold (relative to the median chapter size) are
+# flagged as suspiciously short.  The value represents the fraction of the
+# median chapter size.
+_SHORT_CHAPTER_FRACTION = 0.1
+
+
+def validate_chapter(chapter_text: str, chapter_title: str) -> dict:
+    """Validate a single chapter's conversion quality.
+
+    Checks:
+    1. Non-empty content (at least ``_MIN_CHAPTER_CHARS`` characters).
+    2. Vietnamese diacritics present (at least ``_MIN_DIACRITIC_COUNT``).
+    3. No garbled / replacement characters.
+
+    Args:
+        chapter_text: The cleaned chapter body text.
+        chapter_title: Chapter title for log messages.
+
+    Returns:
+        Dict with keys ``valid`` (bool), ``issues`` (list of str),
+        ``char_count`` (int), ``diacritic_count`` (int),
+        ``garbled_count`` (int).
+    """
+    issues: list[str] = []
+
+    char_count = len(chapter_text.strip())
+    diacritic_count = len(_VIETNAMESE_DIACRITICS_RE.findall(chapter_text))
+    garbled_count = len(_GARBLED_CHARS_RE.findall(chapter_text))
+
+    # Check 1: Non-empty content
+    if char_count < _MIN_CHAPTER_CHARS:
+        issues.append(
+            f"Suspiciously short content ({char_count} chars, "
+            f"minimum {_MIN_CHAPTER_CHARS})"
+        )
+
+    # Check 2: Vietnamese diacritics present
+    if diacritic_count < _MIN_DIACRITIC_COUNT:
+        issues.append(
+            f"Very few Vietnamese diacritics ({diacritic_count}, "
+            f"minimum {_MIN_DIACRITIC_COUNT})"
+        )
+
+    # Check 3: No garbled / replacement characters
+    if garbled_count > 0:
+        issues.append(
+            f"{garbled_count} garbled/replacement character(s) found"
+        )
+
+    for issue in issues:
+        logger.warning("Chapter '%s': %s", chapter_title, issue)
+
+    return {
+        "title": chapter_title,
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "char_count": char_count,
+        "diacritic_count": diacritic_count,
+        "garbled_count": garbled_count,
+    }
+
+
+def validate_chapters(
+    chapters: list[Chapter],
+    full_text: str,
+    cleaned_texts: list[str],
+) -> dict:
+    """Run quality validation on all chapters and produce a report.
+
+    In addition to per-chapter checks, this function:
+    - Flags suspiciously short chapters (below ``_SHORT_CHAPTER_FRACTION``
+      of the median chapter size).
+    - Compares total extracted character count against the full PDF text
+      length (coverage check).
+
+    Args:
+        chapters: Detected chapter list.
+        full_text: Full document text (for coverage comparison).
+        cleaned_texts: List of cleaned chapter body texts, parallel to *chapters*.
+
+    Returns:
+        Quality report dict with ``chapters`` (list of per-chapter results),
+        ``summary`` (aggregate statistics), and ``coverage`` info.
+    """
+    # Per-chapter validation
+    chapter_results: list[dict] = []
+    for chapter, cleaned in zip(chapters, cleaned_texts):
+        result = validate_chapter(cleaned, chapter.title)
+        result["index"] = chapter.index
+        chapter_results.append(result)
+
+    # Detect suspiciously short chapters relative to the median
+    char_counts = [r["char_count"] for r in chapter_results if r["char_count"] > 0]
+    if char_counts:
+        sorted_counts = sorted(char_counts)
+        median_chars = sorted_counts[len(sorted_counts) // 2]
+        threshold = max(_MIN_CHAPTER_CHARS, median_chars * _SHORT_CHAPTER_FRACTION)
+
+        for result in chapter_results:
+            if (
+                result["char_count"] > 0
+                and result["char_count"] < threshold
+                and result["valid"]
+            ):
+                issue = (
+                    f"Short relative to median "
+                    f"({result['char_count']} chars vs median {median_chars})"
+                )
+                result["issues"].append(issue)
+                result["valid"] = False
+                logger.warning("Chapter '%s': %s", result["title"], issue)
+
+    # Coverage comparison
+    total_extracted_chars = sum(r["char_count"] for r in chapter_results)
+    full_text_length = len(full_text)
+    coverage_pct = (
+        (total_extracted_chars / full_text_length * 100) if full_text_length > 0 else 0.0
+    )
+
+    total_valid = sum(1 for r in chapter_results if r["valid"])
+    total_issues = sum(len(r["issues"]) for r in chapter_results)
+    total_diacritics = sum(r["diacritic_count"] for r in chapter_results)
+    total_garbled = sum(r["garbled_count"] for r in chapter_results)
+
+    report = {
+        "chapters": chapter_results,
+        "summary": {
+            "total_chapters": len(chapter_results),
+            "valid_chapters": total_valid,
+            "invalid_chapters": len(chapter_results) - total_valid,
+            "total_issues": total_issues,
+            "total_characters": total_extracted_chars,
+            "total_diacritics": total_diacritics,
+            "total_garbled": total_garbled,
+        },
+        "coverage": {
+            "extracted_chars": total_extracted_chars,
+            "full_text_chars": full_text_length,
+            "coverage_pct": round(coverage_pct, 2),
+        },
+    }
+
+    # Log summary
+    logger.info(
+        "Quality validation: %d/%d chapters valid, %d issue(s)",
+        total_valid,
+        len(chapter_results),
+        total_issues,
+    )
+    logger.info(
+        "Coverage: %d / %d chars (%.1f%%)",
+        total_extracted_chars,
+        full_text_length,
+        coverage_pct,
+    )
+
+    return report
+
+
 def setup_logging(verbose: bool = False) -> None:
     """Configure logging with appropriate level and format."""
     level = logging.DEBUG if verbose else logging.INFO
@@ -561,8 +742,21 @@ def main(argv: list[str] | None = None) -> int:
     # Write chapter Markdown files
     written_files = write_chapters(chapters, full_text, args.output_dir)
 
-    # TODO(subtask-3-1): Quality validation
-    # TODO(subtask-3-2): Quality report generation
+    # Quality validation – build cleaned texts for each chapter
+    cleaned_texts = [
+        clean_chapter_text(full_text[ch.start:ch.end]) for ch in chapters
+    ]
+    quality_report = validate_chapters(chapters, full_text, cleaned_texts)
+
+    # Write quality report alongside the script
+    report_path = SCRIPT_DIR / "quality-report.json"
+    report_path.write_text(
+        json.dumps(quality_report, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    logger.info("Quality report written to %s", report_path)
+
+    # TODO(subtask-3-2): Enhanced quality report with human-readable summary
 
     logger.info("Conversion complete: %d chapters written to %s", len(written_files), args.output_dir)
     return 0
