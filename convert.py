@@ -256,6 +256,172 @@ def print_chapter_summary(chapters: list[Chapter], full_text: str) -> None:
     print()
 
 
+# ---------------------------------------------------------------------------
+# Text cleanup
+# ---------------------------------------------------------------------------
+
+# Common PDF page number patterns.  These appear as standalone lines and
+# should be stripped entirely.  We match digits optionally surrounded by
+# dashes, dots, or whitespace (e.g. "— 42 —", "42", "- 42 -", "..42..").
+_PAGE_NUMBER_RE = re.compile(
+    r"^\s*[-—.]*\s*\d{1,4}\s*[-—.]*\s*$",
+    re.MULTILINE,
+)
+
+# Repeated header/footer lines that pymupdf4llm may preserve.  We target
+# lines that look like a running header (short, all-caps or title-case,
+# repeating the book title or author).
+_HEADER_FOOTER_RE = re.compile(
+    r"^\s*(?:ĐẤT RỪNG PHƯƠNG NAM|Đất Rừng Phương Nam|NGUYỄN VĂN BA|Đoàn Giỏi)\s*$",
+    re.MULTILINE | re.IGNORECASE,
+)
+
+# Hyphenated words split across lines (e.g. "thuyền-\nbuồm" → "thuyềnbuồm"
+# is wrong; we want "thuyền buồm" only when the hyphen is a soft-hyphen /
+# line-break artefact).  We detect a word-char followed by a hyphen at end of
+# line, then whitespace + lowercase continuation.
+_HYPHEN_SPLIT_RE = re.compile(
+    r"(\w)-\s*\n\s*([a-zàáảãạăắằẳẵặâấầẩẫậđèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵ])",
+    re.UNICODE,
+)
+
+# Excessive blank lines (3+ consecutive newlines → 2 newlines = one blank line).
+_EXCESS_BLANKS_RE = re.compile(r"\n{3,}")
+
+# Horizontal rules or decorative separators that pymupdf4llm may produce.
+_DECORATIVE_LINE_RE = re.compile(r"^\s*[-_=*]{3,}\s*$", re.MULTILINE)
+
+
+def clean_chapter_text(raw_text: str) -> str:
+    """Clean up PDF extraction artefacts from chapter text.
+
+    Applies the following transformations in order:
+    1. Remove page number lines.
+    2. Remove repeated header/footer lines.
+    3. Remove decorative separator lines.
+    4. Rejoin hyphenated words split across line breaks.
+    5. Collapse excessive blank lines.
+    6. Strip leading/trailing whitespace.
+
+    Args:
+        raw_text: Raw chapter text sliced from the full document.
+
+    Returns:
+        Cleaned text ready for Markdown output.
+    """
+    text = raw_text
+
+    # 1. Strip page numbers
+    text = _PAGE_NUMBER_RE.sub("", text)
+
+    # 2. Strip repeated headers/footers
+    text = _HEADER_FOOTER_RE.sub("", text)
+
+    # 3. Strip decorative separators
+    text = _DECORATIVE_LINE_RE.sub("", text)
+
+    # 4. Rejoin hyphenated words
+    text = _HYPHEN_SPLIT_RE.sub(r"\1\2", text)
+
+    # 5. Collapse excessive blank lines (keep max one blank line between paragraphs)
+    text = _EXCESS_BLANKS_RE.sub("\n\n", text)
+
+    # 6. Strip leading/trailing whitespace
+    text = text.strip()
+
+    return text
+
+
+def _slugify_title(title: str, max_len: int = 40) -> str:
+    """Create a filesystem-safe slug from a chapter title.
+
+    Converts Vietnamese characters to a simplified form for filenames.
+    Only used to make filenames more readable; the canonical identifier
+    is the zero-padded chapter number.
+
+    Args:
+        title: Chapter title text.
+        max_len: Maximum length for the slug portion.
+
+    Returns:
+        Lowercase ASCII-safe slug, or empty string if nothing usable.
+    """
+    # Keep only word characters and spaces, lowercase
+    slug = re.sub(r"[^\w\s-]", "", title.lower())
+    # Collapse whitespace to hyphens
+    slug = re.sub(r"\s+", "-", slug.strip())
+    # Truncate
+    if len(slug) > max_len:
+        slug = slug[:max_len].rstrip("-")
+    return slug
+
+
+# ---------------------------------------------------------------------------
+# Markdown file output
+# ---------------------------------------------------------------------------
+
+
+def write_chapters(
+    chapters: list[Chapter],
+    full_text: str,
+    output_dir: pathlib.Path,
+) -> list[pathlib.Path]:
+    """Write each chapter to a separate Markdown file.
+
+    Creates the output directory if it does not exist.  Each file contains
+    the chapter title as an H1 heading followed by the cleaned body text.
+
+    File naming scheme:
+    - ``chapter-00-loi-mo-dau.md`` for prologue
+    - ``chapter-01.md``, ``chapter-02.md``, … for regular chapters
+
+    Args:
+        chapters: Detected chapter list from :func:`detect_chapters`.
+        full_text: The full document text (chapters reference offsets into this).
+        output_dir: Directory to write Markdown files into.
+
+    Returns:
+        List of paths to written files.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info("Writing %d chapter(s) to %s", len(chapters), output_dir)
+
+    written_files: list[pathlib.Path] = []
+
+    for chapter in chapters:
+        # Extract raw text for this chapter
+        raw_body = full_text[chapter.start:chapter.end]
+
+        # Clean up PDF artefacts
+        body = clean_chapter_text(raw_body)
+
+        # Build filename with zero-padded index
+        slug = _slugify_title(chapter.title)
+        if slug:
+            filename = f"chapter-{chapter.index:02d}-{slug}.md"
+        else:
+            filename = f"chapter-{chapter.index:02d}.md"
+
+        file_path = output_dir / filename
+
+        # Build Markdown content: H1 title + body
+        # Remove the chapter header from body if it starts with it (avoid duplication)
+        # since we add it as H1
+        md_content = f"# {chapter.title}\n\n{body}\n"
+
+        file_path.write_text(md_content, encoding="utf-8")
+        written_files.append(file_path)
+
+        logger.info(
+            "  Written: %s (%d chars)",
+            filename,
+            len(body),
+        )
+
+    logger.info("All %d chapter file(s) written", len(written_files))
+    return written_files
+
+
 def setup_logging(verbose: bool = False) -> None:
     """Configure logging with appropriate level and format."""
     level = logging.DEBUG if verbose else logging.INFO
@@ -392,11 +558,13 @@ def main(argv: list[str] | None = None) -> int:
         logger.info("Dry run complete – no files written")
         return 0
 
-    # TODO(subtask-2-3): Markdown file output with cleanup
+    # Write chapter Markdown files
+    written_files = write_chapters(chapters, full_text, args.output_dir)
+
     # TODO(subtask-3-1): Quality validation
     # TODO(subtask-3-2): Quality report generation
 
-    logger.info("Conversion complete: %d chapters", len(chapters))
+    logger.info("Conversion complete: %d chapters written to %s", len(written_files), args.output_dir)
     return 0
 
 
