@@ -16,28 +16,51 @@ CHAPTERS_JA_DIR = PROJECT_DIR / "chapters" / "ja"
 OUTPUT_FILE = PROJECT_DIR / "index.html"
 
 
-def read_chapter_paragraphs(file_path):
+def read_chapter_paragraphs(file_path, aggressive_merge=True):
     """Read a chapter file and return list of paragraphs.
 
-    Paragraphs are separated by blank lines in the source file.
+    If aggressive_merge is True, combines short consecutive lines into larger paragraphs
+    to reduce spacing. Otherwise, treats blank lines as paragraph separators.
     """
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Split by double newlines (blank lines) to get paragraphs
     lines = content.split('\n')
+
+    if not aggressive_merge:
+        # Original logic: blank lines separate paragraphs
+        paragraphs = []
+        current_para = []
+        for line in lines:
+            line = line.strip()
+            if line:
+                current_para.append(line)
+            else:
+                if current_para:
+                    paragraphs.append(' '.join(current_para))
+                    current_para = []
+        if current_para:
+            paragraphs.append(' '.join(current_para))
+        return paragraphs
+
+    # Aggressive merge: combine short lines more aggressively
     paragraphs = []
     current_para = []
+    blank_count = 0
 
     for line in lines:
         line = line.strip()
         if line:
             current_para.append(line)
+            blank_count = 0
         else:
-            if current_para:
-                # Join lines in same paragraph with a space
-                paragraphs.append(' '.join(current_para))
-                current_para = []
+            blank_count += 1
+            # Only start new paragraph after 2+ consecutive blank lines,
+            # OR if current paragraph is getting too long (10+ lines)
+            if blank_count >= 2 or len(current_para) >= 10:
+                if current_para:
+                    paragraphs.append(' '.join(current_para))
+                    current_para = []
 
     # Don't forget the last paragraph
     if current_para:
@@ -63,7 +86,7 @@ def generate_html():
                 chapter_content = lines[1].strip() if len(lines) > 1 else ""
                 vi_chapters.append((title, chapter_content))
 
-    # Read all Japanese chapters
+    # Read all Japanese chapters with aggressive merging
     ja_chapters = []
     for i in range(1, 21):
         file_path = CHAPTERS_JA_DIR / f"chapter{i}_ja.txt"
@@ -73,18 +96,28 @@ def generate_html():
                 # Extract title (first line) and content (rest)
                 lines = content.strip().split('\n', 1)
                 title = lines[0].strip()
-                # Parse content into paragraphs
+                # Parse content into paragraphs with aggressive merging
                 if len(lines) > 1:
+                    chapter_lines = lines[1].split('\n')
                     paragraphs = []
                     current_para = []
-                    for line in lines[1].split('\n'):
+                    blank_count = 0
+
+                    for line in chapter_lines:
                         line = line.strip()
                         if line:
                             current_para.append(line)
+                            blank_count = 0
                         else:
-                            if current_para:
-                                paragraphs.append(' '.join(current_para))
-                                current_para = []
+                            blank_count += 1
+                            # Only start new paragraph after 2+ consecutive blank lines,
+                            # OR if current paragraph is getting too long
+                            if blank_count >= 2 or len(current_para) >= 10:
+                                if current_para:
+                                    paragraphs.append(' '.join(current_para))
+                                    current_para = []
+
+                    # Don't forget the last paragraph
                     if current_para:
                         paragraphs.append(' '.join(current_para))
                 else:
