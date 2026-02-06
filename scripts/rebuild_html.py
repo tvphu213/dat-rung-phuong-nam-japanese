@@ -304,8 +304,9 @@ def generate_html():
         }
 
         .chapter-content p {
-            margin-bottom: 1.2rem;
+            margin-bottom: 0.5rem;
             text-align: justify;
+            line-height: 1.8;
         }
 
         .back-to-top {
