@@ -124,3 +124,127 @@ def validate_japanese_chapter(chapter_text: str, chapter_title: str) -> dict:
         "japanese_char_count": japanese_char_count,
         "garbled_count": garbled_count,
     }
+
+
+def validate_japanese_chapters(chapters_dir: pathlib.Path) -> dict:
+    """Run quality validation on all Japanese chapter files and produce a report.
+
+    Reads all ``.md`` chapter files from the specified directory, validates
+    each one via :func:`validate_japanese_chapter`, and aggregates results.
+    In addition to per-chapter checks, this function flags suspiciously short
+    chapters (below ``_SHORT_CHAPTER_FRACTION`` of the median chapter size).
+
+    Args:
+        chapters_dir: Path to directory containing Japanese chapter .md files.
+
+    Returns:
+        Quality report dict with ``chapters`` (list of per-chapter results),
+        ``summary`` (aggregate statistics), and ``timestamp`` (ISO-8601).
+        Each chapter result includes ``filename``, ``valid``, ``issues``,
+        ``char_count``, ``japanese_char_count``, and ``garbled_count``.
+    """
+    # Find all .md files in chapters directory
+    if not chapters_dir.exists():
+        logger.error("Chapters directory does not exist: %s", chapters_dir)
+        return {
+            "script_version": SCRIPT_VERSION,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "chapters": [],
+            "summary": {
+                "total_chapters": 0,
+                "valid_chapters": 0,
+                "invalid_chapters": 0,
+                "total_issues": 0,
+                "total_characters": 0,
+                "total_japanese_chars": 0,
+                "total_garbled": 0,
+            },
+            "error": f"Chapters directory not found: {chapters_dir}",
+        }
+
+    chapter_files = sorted(chapters_dir.glob("*.md"))
+    if not chapter_files:
+        logger.warning("No .md files found in: %s", chapters_dir)
+
+    logger.info("Found %d chapter file(s) in: %s", len(chapter_files), chapters_dir)
+
+    # Per-chapter validation
+    chapter_results: list[dict] = []
+    for chapter_file in chapter_files:
+        try:
+            chapter_text = chapter_file.read_text(encoding="utf-8")
+            # Extract title from filename (e.g. "01-chuong-1.md" → "01-chuong-1")
+            title = chapter_file.stem
+            result = validate_japanese_chapter(chapter_text, title)
+            result["filename"] = chapter_file.name
+            chapter_results.append(result)
+            logger.info(
+                "Validated '%s': %s (%d chars, %d Japanese chars)",
+                chapter_file.name,
+                "VALID" if result["valid"] else "INVALID",
+                result["char_count"],
+                result["japanese_char_count"],
+            )
+        except Exception as exc:
+            logger.error("Failed to read/validate '%s': %s", chapter_file.name, exc)
+            chapter_results.append({
+                "filename": chapter_file.name,
+                "title": chapter_file.stem,
+                "valid": False,
+                "issues": [f"Failed to read file: {exc}"],
+                "char_count": 0,
+                "japanese_char_count": 0,
+                "garbled_count": 0,
+            })
+
+    # Detect suspiciously short chapters relative to the median
+    char_counts = [r["char_count"] for r in chapter_results if r["char_count"] > 0]
+    if char_counts:
+        sorted_counts = sorted(char_counts)
+        median_chars = sorted_counts[len(sorted_counts) // 2]
+        threshold = max(_MIN_CHAPTER_CHARS, median_chars * _SHORT_CHAPTER_FRACTION)
+
+        for result in chapter_results:
+            if (
+                result["char_count"] > 0
+                and result["char_count"] < threshold
+                and result["valid"]
+            ):
+                issue = (
+                    f"Short relative to median "
+                    f"({result['char_count']} chars vs median {median_chars})"
+                )
+                result["issues"].append(issue)
+                result["valid"] = False
+                logger.warning("Chapter '%s': %s", result["title"], issue)
+
+    # Aggregate statistics
+    total_valid = sum(1 for r in chapter_results if r["valid"])
+    total_issues = sum(len(r["issues"]) for r in chapter_results)
+    total_chars = sum(r["char_count"] for r in chapter_results)
+    total_japanese = sum(r["japanese_char_count"] for r in chapter_results)
+    total_garbled = sum(r["garbled_count"] for r in chapter_results)
+
+    report = {
+        "script_version": SCRIPT_VERSION,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "chapters": chapter_results,
+        "summary": {
+            "total_chapters": len(chapter_results),
+            "valid_chapters": total_valid,
+            "invalid_chapters": len(chapter_results) - total_valid,
+            "total_issues": total_issues,
+            "total_characters": total_chars,
+            "total_japanese_chars": total_japanese,
+            "total_garbled": total_garbled,
+        },
+    }
+
+    logger.info(
+        "Validation complete: %d/%d chapters valid, %d total issues",
+        total_valid,
+        len(chapter_results),
+        total_issues,
+    )
+
+    return report
