@@ -248,3 +248,162 @@ def validate_japanese_chapters(chapters_dir: pathlib.Path) -> dict:
     )
 
     return report
+
+
+def print_japanese_quality_summary(report: dict) -> None:
+    """Print a human-readable Japanese quality validation summary to stdout.
+
+    Displays per-chapter validation status, summary statistics, and
+    Japanese character metrics in a formatted table.
+
+    Args:
+        report: Quality report dict from :func:`validate_japanese_chapters`.
+    """
+    summary = report["summary"]
+    chapters = report["chapters"]
+
+    print(f"\n{'=' * 75}")
+    print(f"  JAPANESE QUALITY VALIDATION REPORT  (v{report.get('script_version', '?')})")
+    print(f"{'=' * 75}")
+    print(f"  Timestamp: {report.get('timestamp', 'N/A')}")
+    print()
+
+    # Per-chapter table
+    print(f"  {'#':<5} {'Status':<8} {'Title':<30} {'Chars':>10} {'JP Chars':>10}")
+    print(f"  {'-' * 5} {'-' * 8} {'-' * 30} {'-' * 10} {'-' * 10}")
+    for i, ch in enumerate(chapters):
+        status = "✓ OK" if ch["valid"] else "✗ FAIL"
+        title = ch["title"][:29] if len(ch["title"]) > 29 else ch["title"]
+        print(
+            f"  {i:<5} {status:<8} {title:<30} "
+            f"{ch['char_count']:>10,} {ch['japanese_char_count']:>10,}"
+        )
+        for issue in ch["issues"]:
+            print(f"         ↳ {issue}")
+
+    # Summary
+    print(f"\n  {'─' * 75}")
+    print(f"  Chapters:        {summary['total_chapters']} total, "
+          f"{summary['valid_chapters']} valid, "
+          f"{summary['invalid_chapters']} with issues")
+    print(f"  Characters:      {summary['total_characters']:,} total")
+    print(f"  Japanese chars:  {summary['total_japanese_chars']:,}")
+    if summary["total_garbled"] > 0:
+        print(f"  ⚠ Garbled:       {summary['total_garbled']} replacement/control chars found")
+
+    # Overall verdict
+    all_valid = summary["invalid_chapters"] == 0
+    print(f"\n  {'─' * 75}")
+    if all_valid:
+        print("  ✓ ALL CHAPTERS PASSED JAPANESE VALIDATION")
+    else:
+        print(f"  ✗ {summary['invalid_chapters']} CHAPTER(S) HAVE ISSUES")
+    print(f"{'=' * 75}\n")
+
+
+def setup_logging(verbose: bool = False) -> None:
+    """Configure logging with appropriate level and format."""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments.
+
+    Args:
+        argv: Argument list (defaults to sys.argv[1:]).
+
+    Returns:
+        Parsed argument namespace.
+    """
+    parser = argparse.ArgumentParser(
+        description="Validate Japanese text quality in Đất Rừng Phương Nam translation chapters.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  python validate_japanese.py\n"
+            "  python validate_japanese.py --chapters-dir chapters/ja\n"
+            "  python validate_japanese.py --chapters-dir chapters/ja --output-report report.json\n"
+            "  python validate_japanese.py --dry-run --verbose\n"
+        ),
+    )
+    parser.add_argument(
+        "--chapters-dir",
+        type=pathlib.Path,
+        default=DEFAULT_CHAPTERS_DIR,
+        help=f"Directory containing Japanese chapter .md files (default: {DEFAULT_CHAPTERS_DIR})",
+    )
+    parser.add_argument(
+        "--output-report",
+        type=pathlib.Path,
+        default=DEFAULT_OUTPUT_REPORT,
+        help=f"Path for JSON quality report output (default: {DEFAULT_OUTPUT_REPORT})",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run validation but do not write report file",
+    )
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Enable debug-level logging",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Entry point for Japanese quality validation.
+
+    Args:
+        argv: Optional argument list for testing.
+
+    Returns:
+        Exit code (0 for success, 1 for error).
+    """
+    args = parse_args(argv)
+    setup_logging(verbose=args.verbose)
+
+    logger.info("Starting Japanese quality validation")
+    logger.info("Chapters directory: %s", args.chapters_dir)
+    if args.dry_run:
+        logger.info("Mode: DRY RUN (no report file will be written)")
+
+    # Run validation
+    quality_report = validate_japanese_chapters(args.chapters_dir)
+
+    # Check for error condition
+    if "error" in quality_report:
+        logger.error("Validation failed: %s", quality_report["error"])
+        return 1
+
+    # Write report file (unless dry-run)
+    if not args.dry_run:
+        args.output_report.parent.mkdir(parents=True, exist_ok=True)
+        args.output_report.write_text(
+            json.dumps(quality_report, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        logger.info("Quality report written to %s", args.output_report)
+
+    # Print human-readable summary to stdout
+    print_japanese_quality_summary(quality_report)
+
+    summary = quality_report["summary"]
+    logger.info(
+        "Validation complete: %d/%d chapters valid",
+        summary["valid_chapters"],
+        summary["total_chapters"],
+    )
+
+    # Return non-zero exit code if any chapters failed validation
+    return 1 if summary["invalid_chapters"] > 0 else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
