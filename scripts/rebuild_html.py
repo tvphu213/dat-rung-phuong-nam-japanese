@@ -3,17 +3,125 @@
 
 Reads chapter files and combines sentences in the same paragraph into a single <p> tag,
 instead of creating separate <p> tags for each sentence.
+
+Usage:
+    python rebuild_html.py
+    python rebuild_html.py --vi-dir chapters/vi --ja-dir chapters/ja
+    python rebuild_html.py --output dist/index.html
+    python rebuild_html.py --dry-run
+    python rebuild_html.py --help
 """
 
+from __future__ import annotations
+
+import argparse
+import logging
 import pathlib
 import re
+import sys
 
-# Paths
+logger = logging.getLogger(__name__)
+
+# Script metadata
+SCRIPT_VERSION = "1.0.0"
+
+# Default paths relative to this script's location
 SCRIPT_DIR = pathlib.Path(__file__).parent
 PROJECT_DIR = SCRIPT_DIR.parent
-CHAPTERS_VI_DIR = PROJECT_DIR / "chapters" / "vi"
-CHAPTERS_JA_DIR = PROJECT_DIR / "chapters" / "ja"
-OUTPUT_FILE = PROJECT_DIR / "index.html"
+DEFAULT_VI_DIR = PROJECT_DIR / "chapters" / "vi"
+DEFAULT_JA_DIR = PROJECT_DIR / "chapters" / "ja"
+DEFAULT_OUTPUT_FILE = PROJECT_DIR / "index.html"
+
+# ---------------------------------------------------------------------------
+# Argument parsing and logging setup
+# ---------------------------------------------------------------------------
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments.
+
+    Args:
+        argv: Optional argument list for testing. If None, uses sys.argv.
+
+    Returns:
+        Parsed argument namespace containing all CLI options.
+    """
+    parser = argparse.ArgumentParser(
+        description="Rebuild index.html with proper paragraph structure from chapter files.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s
+  %(prog)s --vi-dir chapters/vi --ja-dir chapters/ja
+  %(prog)s --output dist/index.html
+  %(prog)s --dry-run --verbose
+        """,
+    )
+
+    parser.add_argument(
+        "--vi-dir",
+        type=pathlib.Path,
+        default=DEFAULT_VI_DIR,
+        metavar="PATH",
+        help=f"Directory containing Vietnamese chapter files (default: {DEFAULT_VI_DIR.relative_to(PROJECT_DIR)})",
+    )
+
+    parser.add_argument(
+        "--ja-dir",
+        type=pathlib.Path,
+        default=DEFAULT_JA_DIR,
+        metavar="PATH",
+        help=f"Directory containing Japanese chapter files (default: {DEFAULT_JA_DIR.relative_to(PROJECT_DIR)})",
+    )
+
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=pathlib.Path,
+        default=DEFAULT_OUTPUT_FILE,
+        metavar="FILE",
+        help=f"Output HTML file path (default: {DEFAULT_OUTPUT_FILE.relative_to(PROJECT_DIR)})",
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Generate HTML without writing to file (useful for testing)",
+    )
+
+    parser.add_argument(
+        "--verbose",
+        "-v",
+        action="store_true",
+        help="Enable verbose logging output",
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {SCRIPT_VERSION}",
+    )
+
+    return parser.parse_args(argv)
+
+
+def setup_logging(verbose: bool = False) -> None:
+    """Configure logging for the script.
+
+    Args:
+        verbose: If True, set logging level to DEBUG; otherwise INFO.
+    """
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(levelname)s: %(message)s",
+        stream=sys.stderr,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Chapter processing
+# ---------------------------------------------------------------------------
 
 
 def read_chapter_paragraphs(file_path, aggressive_merge=True):
@@ -69,13 +177,23 @@ def read_chapter_paragraphs(file_path, aggressive_merge=True):
     return paragraphs
 
 
-def generate_html():
-    """Generate the complete HTML file."""
+def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
+    """Generate the complete HTML file.
+
+    Args:
+        vi_dir: Directory containing Vietnamese chapter files.
+        ja_dir: Directory containing Japanese chapter files.
+
+    Returns:
+        Complete HTML document as a string.
+    """
+    logger.info("Reading Vietnamese chapters from: %s", vi_dir)
+    logger.info("Reading Japanese chapters from: %s", ja_dir)
 
     # Read all Vietnamese chapters
     vi_chapters = []
     for i in range(1, 21):
-        file_path = CHAPTERS_VI_DIR / f"chapter{i}.txt"
+        file_path = vi_dir / f"chapter{i}.txt"
         if file_path.exists():
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -89,7 +207,7 @@ def generate_html():
     # Read all Japanese chapters with aggressive merging
     ja_chapters = []
     for i in range(1, 21):
-        file_path = CHAPTERS_JA_DIR / f"chapter{i}_ja.txt"
+        file_path = ja_dir / f"chapter{i}_ja.txt"
         if file_path.exists():
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -510,15 +628,66 @@ def generate_html():
 
 </html>'''
 
+    logger.info("HTML generation complete: %d bytes", len(html))
     return html
 
 
+# ---------------------------------------------------------------------------
+# Main entry point
+# ---------------------------------------------------------------------------
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Main entry point for the rebuild_html script.
+
+    Args:
+        argv: Optional argument list for testing. If None, uses sys.argv.
+
+    Returns:
+        Exit code: 0 for success, non-zero for failure.
+    """
+    args = parse_args(argv)
+    setup_logging(args.verbose)
+
+    logger.info("Starting HTML rebuild (version %s)", SCRIPT_VERSION)
+    logger.debug("Vietnamese chapters directory: %s", args.vi_dir)
+    logger.debug("Japanese chapters directory: %s", args.ja_dir)
+    logger.debug("Output file: %s", args.output)
+
+    # Validate input directories
+    if not args.vi_dir.exists():
+        logger.error("Vietnamese chapters directory not found: %s", args.vi_dir)
+        return 1
+    if not args.ja_dir.exists():
+        logger.error("Japanese chapters directory not found: %s", args.ja_dir)
+        return 1
+
+    # Generate HTML
+    try:
+        html = generate_html(args.vi_dir, args.ja_dir)
+    except Exception as e:
+        logger.error("Failed to generate HTML: %s", e)
+        logger.debug("Exception details:", exc_info=True)
+        return 1
+
+    # Write output (unless dry-run)
+    if args.dry_run:
+        logger.info("Dry-run mode: skipping file write")
+        logger.info("Generated HTML size: %d bytes", len(html))
+    else:
+        try:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            with open(args.output, 'w', encoding='utf-8') as f:
+                f.write(html)
+            logger.info("✅ Successfully wrote %s", args.output)
+            logger.info("   File size: %d bytes", len(html))
+        except Exception as e:
+            logger.error("Failed to write output file: %s", e)
+            logger.debug("Exception details:", exc_info=True)
+            return 1
+
+    return 0
+
+
 if __name__ == '__main__':
-    print("Rebuilding index.html with proper paragraph structure...")
-    html = generate_html()
-
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        f.write(html)
-
-    print(f"✅ Done! Generated {OUTPUT_FILE}")
-    print(f"   File size: {len(html):,} bytes")
+    sys.exit(main())
