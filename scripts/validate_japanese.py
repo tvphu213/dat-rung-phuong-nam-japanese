@@ -129,13 +129,13 @@ def validate_japanese_chapter(chapter_text: str, chapter_title: str) -> dict:
 def validate_japanese_chapters(chapters_dir: pathlib.Path) -> dict:
     """Run quality validation on all Japanese chapter files and produce a report.
 
-    Reads all ``.md`` chapter files from the specified directory, validates
+    Reads all ``.txt`` chapter files from the specified directory, validates
     each one via :func:`validate_japanese_chapter`, and aggregates results.
     In addition to per-chapter checks, this function flags suspiciously short
     chapters (below ``_SHORT_CHAPTER_FRACTION`` of the median chapter size).
 
     Args:
-        chapters_dir: Path to directory containing Japanese chapter .md files.
+        chapters_dir: Path to directory containing Japanese chapter .txt files.
 
     Returns:
         Quality report dict with ``chapters`` (list of per-chapter results),
@@ -143,7 +143,7 @@ def validate_japanese_chapters(chapters_dir: pathlib.Path) -> dict:
         Each chapter result includes ``filename``, ``valid``, ``issues``,
         ``char_count``, ``japanese_char_count``, and ``garbled_count``.
     """
-    # Find all .md files in chapters directory
+    # Find all .txt files in chapters directory
     if not chapters_dir.exists():
         logger.error("Chapters directory does not exist: %s", chapters_dir)
         return {
@@ -162,9 +162,9 @@ def validate_japanese_chapters(chapters_dir: pathlib.Path) -> dict:
             "error": f"Chapters directory not found: {chapters_dir}",
         }
 
-    chapter_files = sorted(chapters_dir.glob("*.md"))
+    chapter_files = sorted(chapters_dir.glob("*.txt"))
     if not chapter_files:
-        logger.warning("No .md files found in: %s", chapters_dir)
+        logger.warning("No .txt files found in: %s", chapters_dir)
 
     logger.info("Found %d chapter file(s) in: %s", len(chapter_files), chapters_dir)
 
@@ -335,7 +335,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--chapters-dir",
         type=pathlib.Path,
         default=DEFAULT_CHAPTERS_DIR,
-        help=f"Directory containing Japanese chapter .md files (default: {DEFAULT_CHAPTERS_DIR})",
+        help=f"Directory containing Japanese chapter .txt files (default: {DEFAULT_CHAPTERS_DIR})",
     )
     parser.add_argument(
         "--output-report",
