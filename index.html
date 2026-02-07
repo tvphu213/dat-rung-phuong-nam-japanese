@@ -65,7 +65,7 @@
             background: var(--earth-brown);
             border-bottom: 3px solid var(--forest-green);
             position: sticky;
-            top: 0;
+            top: 4px;
             z-index: 100;
         }
 
@@ -181,6 +181,23 @@
             line-height: 1.8;
         }
 
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .reading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--forest-green) 0%, var(--accent-gold) 100%);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
         .back-to-top {
             position: fixed;
             bottom: 2rem;
@@ -259,6 +276,10 @@
 </head>
 
 <body>
+    <div class="reading-progress">
+        <div class="reading-progress-bar"></div>
+    </div>
+
     <div class="container">
         <header>
             <h1>Đất Rừng Phương Nam</h1>
@@ -4613,7 +4634,7 @@ Một luồng gió sớm từ biển thổi vào, mang theo hơi mát lạnh c�
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Show/hide back-to-top button
+        // Show/hide back-to-top button and update reading progress
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
             if (window.pageYOffset > 300) {
@@ -4621,6 +4642,15 @@ Một luồng gió sớm từ biển thổi vào, mang theo hơi mát lạnh c�
             } else {
                 backToTop.classList.remove('visible');
             }
+
+            // Update reading progress bar
+            const progressBar = document.querySelector('.reading-progress-bar');
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const scrollableHeight = documentHeight - windowHeight;
+            const progress = scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0;
+            progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
         });
     </script>
 </body>
