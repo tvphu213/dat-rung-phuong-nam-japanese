@@ -63,3 +63,64 @@ _MIN_JAPANESE_CHARS = 50
 # Fraction threshold: chapters below this fraction of the median length
 # are flagged as suspiciously short.
 _SHORT_CHAPTER_FRACTION = 0.5
+
+
+# ---------------------------------------------------------------------------
+# Japanese validation
+# ---------------------------------------------------------------------------
+
+
+def validate_japanese_chapter(chapter_text: str, chapter_title: str) -> dict:
+    """Validate a single Japanese chapter's translation quality.
+
+    Checks:
+    1. Non-empty content (at least ``_MIN_CHAPTER_CHARS`` characters).
+    2. Japanese characters present (at least ``_MIN_JAPANESE_CHARS``).
+    3. No garbled / replacement characters.
+
+    Args:
+        chapter_text: The Japanese chapter body text.
+        chapter_title: Chapter title for log messages.
+
+    Returns:
+        Dict with keys ``valid`` (bool), ``issues`` (list of str),
+        ``char_count`` (int), ``japanese_char_count`` (int),
+        ``garbled_count`` (int).
+    """
+    issues: list[str] = []
+
+    char_count = len(chapter_text.strip())
+    japanese_char_count = len(JAPANESE_CHARS_RE.findall(chapter_text))
+    garbled_count = len(GARBLED_CHARS_RE.findall(chapter_text))
+
+    # Check 1: Non-empty content
+    if char_count < _MIN_CHAPTER_CHARS:
+        issues.append(
+            f"Suspiciously short content ({char_count} chars, "
+            f"minimum {_MIN_CHAPTER_CHARS})"
+        )
+
+    # Check 2: Japanese characters present
+    if japanese_char_count < _MIN_JAPANESE_CHARS:
+        issues.append(
+            f"Very few Japanese characters ({japanese_char_count}, "
+            f"minimum {_MIN_JAPANESE_CHARS})"
+        )
+
+    # Check 3: No garbled / replacement characters
+    if garbled_count > 0:
+        issues.append(
+            f"{garbled_count} garbled/replacement character(s) found"
+        )
+
+    for issue in issues:
+        logger.warning("Chapter '%s': %s", chapter_title, issue)
+
+    return {
+        "title": chapter_title,
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "char_count": char_count,
+        "japanese_char_count": japanese_char_count,
+        "garbled_count": garbled_count,
+    }
