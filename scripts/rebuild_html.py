@@ -16,9 +16,11 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import pathlib
 import re
 import sys
+import tempfile
 
 logger = logging.getLogger(__name__)
 
@@ -216,28 +218,15 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
                 title = lines[0].strip()
                 # Parse content into paragraphs with aggressive merging
                 if len(lines) > 1:
-                    chapter_lines = lines[1].split('\n')
-                    paragraphs = []
-                    current_para = []
-                    blank_count = 0
+                    # Write remaining content to a temp file and use read_chapter_paragraphs
+                    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', delete=False, suffix='.txt') as tmp:
+                        tmp.write(lines[1])
+                        tmp_path = tmp.name
 
-                    for line in chapter_lines:
-                        line = line.strip()
-                        if line:
-                            current_para.append(line)
-                            blank_count = 0
-                        else:
-                            blank_count += 1
-                            # Only start new paragraph after 2+ consecutive blank lines,
-                            # OR if current paragraph is getting too long
-                            if blank_count >= 2 or len(current_para) >= 10:
-                                if current_para:
-                                    paragraphs.append(' '.join(current_para))
-                                    current_para = []
-
-                    # Don't forget the last paragraph
-                    if current_para:
-                        paragraphs.append(' '.join(current_para))
+                    try:
+                        paragraphs = read_chapter_paragraphs(tmp_path, aggressive_merge=True)
+                    finally:
+                        os.unlink(tmp_path)
                 else:
                     paragraphs = []
 
