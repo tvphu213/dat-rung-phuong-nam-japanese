@@ -1,0 +1,203 @@
+{
+  "script_version": "1.0.0",
+  "timestamp": "2026-02-07T11:00:16.569219+00:00",
+  "chapters": [
+    {
+      "title": "chapter10_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 6118,
+      "japanese_char_count": 5447,
+      "garbled_count": 0,
+      "filename": "chapter10_ja.txt"
+    },
+    {
+      "title": "chapter11_ja",
+      "valid": false,
+      "issues": [
+        "Short relative to median (2960 chars vs median 6490)"
+      ],
+      "char_count": 2960,
+      "japanese_char_count": 2649,
+      "garbled_count": 0,
+      "filename": "chapter11_ja.txt"
+    },
+    {
+      "title": "chapter12_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 5358,
+      "japanese_char_count": 4654,
+      "garbled_count": 0,
+      "filename": "chapter12_ja.txt"
+    },
+    {
+      "title": "chapter13_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 9458,
+      "japanese_char_count": 8484,
+      "garbled_count": 0,
+      "filename": "chapter13_ja.txt"
+    },
+    {
+      "title": "chapter14_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 5695,
+      "japanese_char_count": 5099,
+      "garbled_count": 0,
+      "filename": "chapter14_ja.txt"
+    },
+    {
+      "title": "chapter15_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 10203,
+      "japanese_char_count": 9175,
+      "garbled_count": 0,
+      "filename": "chapter15_ja.txt"
+    },
+    {
+      "title": "chapter16_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 6304,
+      "japanese_char_count": 5704,
+      "garbled_count": 0,
+      "filename": "chapter16_ja.txt"
+    },
+    {
+      "title": "chapter17_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 5141,
+      "japanese_char_count": 4554,
+      "garbled_count": 0,
+      "filename": "chapter17_ja.txt"
+    },
+    {
+      "title": "chapter18_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 8505,
+      "japanese_char_count": 7506,
+      "garbled_count": 0,
+      "filename": "chapter18_ja.txt"
+    },
+    {
+      "title": "chapter19_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 8282,
+      "japanese_char_count": 7367,
+      "garbled_count": 0,
+      "filename": "chapter19_ja.txt"
+    },
+    {
+      "title": "chapter1_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 7360,
+      "japanese_char_count": 6563,
+      "garbled_count": 0,
+      "filename": "chapter1_ja.txt"
+    },
+    {
+      "title": "chapter20_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 7770,
+      "japanese_char_count": 6910,
+      "garbled_count": 0,
+      "filename": "chapter20_ja.txt"
+    },
+    {
+      "title": "chapter2_ja",
+      "valid": false,
+      "issues": [
+        "Short relative to median (2136 chars vs median 6490)"
+      ],
+      "char_count": 2136,
+      "japanese_char_count": 1841,
+      "garbled_count": 0,
+      "filename": "chapter2_ja.txt"
+    },
+    {
+      "title": "chapter3_ja",
+      "valid": false,
+      "issues": [
+        "Short relative to median (1917 chars vs median 6490)"
+      ],
+      "char_count": 1917,
+      "japanese_char_count": 1622,
+      "garbled_count": 0,
+      "filename": "chapter3_ja.txt"
+    },
+    {
+      "title": "chapter4_ja",
+      "valid": false,
+      "issues": [
+        "Short relative to median (2107 chars vs median 6490)"
+      ],
+      "char_count": 2107,
+      "japanese_char_count": 1803,
+      "garbled_count": 0,
+      "filename": "chapter4_ja.txt"
+    },
+    {
+      "title": "chapter5_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 9753,
+      "japanese_char_count": 8879,
+      "garbled_count": 0,
+      "filename": "chapter5_ja.txt"
+    },
+    {
+      "title": "chapter6_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 10029,
+      "japanese_char_count": 8908,
+      "garbled_count": 0,
+      "filename": "chapter6_ja.txt"
+    },
+    {
+      "title": "chapter7_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 5779,
+      "japanese_char_count": 5186,
+      "garbled_count": 0,
+      "filename": "chapter7_ja.txt"
+    },
+    {
+      "title": "chapter8_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 8066,
+      "japanese_char_count": 7125,
+      "garbled_count": 0,
+      "filename": "chapter8_ja.txt"
+    },
+    {
+      "title": "chapter9_ja",
+      "valid": true,
+      "issues": [],
+      "char_count": 6490,
+      "japanese_char_count": 5685,
+      "garbled_count": 0,
+      "filename": "chapter9_ja.txt"
+    }
+  ],
+  "summary": {
+    "total_chapters": 20,
+    "valid_chapters": 16,
+    "invalid_chapters": 4,
+    "total_issues": 4,
+    "total_characters": 129431,
+    "total_japanese_chars": 115161,
+    "total_garbled": 0
+  }
+}
