@@ -548,11 +548,21 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
 
 '''
 
-    # Add Vietnamese chapters
+    # Add Vietnamese chapters - only embed chapter 1, placeholders for others
     for i, (title, content) in enumerate(vi_chapters, 1):
-        html += f'''            <div class="chapter" id="chapter-{i}">
+        if i == 1:
+            # Embed chapter 1 content
+            html += f'''            <div class="chapter" id="chapter-{i}">
                 <h2 class="chapter-title">{title}</h2>
                 <div class="chapter-content">{content}</div>
+            </div>
+
+'''
+        else:
+            # Create empty placeholder for lazy loading
+            html += f'''            <div class="chapter" id="chapter-{i}" data-chapter-num="{i}" data-loaded="false">
+                <h2 class="chapter-title">{title}</h2>
+                <div class="chapter-content"></div>
             </div>
 
 '''
@@ -575,16 +585,26 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
 
 '''
 
-    # Add Japanese chapters
+    # Add Japanese chapters - only embed chapter 1, placeholders for others
     for i, (title, paragraphs) in enumerate(ja_chapters, 1):
-        html += f'''            <div class="chapter" id="chapter-ja-{i}">
+        if i == 1:
+            # Embed chapter 1 content
+            html += f'''            <div class="chapter" id="chapter-ja-{i}">
                 <h3 class="chapter-title">{title}</h3>
                 <div class="chapter-content">
 '''
-        for para in paragraphs:
-            html += f'                    <p>{para}</p>\n'
+            for para in paragraphs:
+                html += f'                    <p>{para}</p>\n'
 
-        html += '''                </div>
+            html += '''                </div>
+            </div>
+
+'''
+        else:
+            # Create empty placeholder for lazy loading
+            html += f'''            <div class="chapter" id="chapter-ja-{i}" data-chapter-num="{i}" data-loaded="false">
+                <h3 class="chapter-title">{title}</h3>
+                <div class="chapter-content"></div>
             </div>
 
 '''
