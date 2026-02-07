@@ -457,7 +457,7 @@ def generate_html():
 
     html += '''        </div>
 
-        <button class="back-to-top" onclick="scrollToTop()">↑</button>
+        <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
     </div>
 
     <script>
