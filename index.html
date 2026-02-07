@@ -4634,7 +4634,7 @@ Một luồng gió sớm từ biển thổi vào, mang theo hơi mát lạnh c�
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Show/hide back-to-top button
+        // Show/hide back-to-top button and update reading progress
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
             if (window.pageYOffset > 300) {
@@ -4642,6 +4642,16 @@ Một luồng gió sớm từ biển thổi vào, mang theo hơi mát lạnh c�
             } else {
                 backToTop.classList.remove('visible');
             }
+
+            // Update reading progress bar
+            const progressBar = document.querySelector('.reading-progress-bar');
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const scrollableHeight = documentHeight - windowHeight;
+            const progress = (scrollTop / scrollableHeight) * 100;
+
+            progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
         });
     </script>
 </body>
