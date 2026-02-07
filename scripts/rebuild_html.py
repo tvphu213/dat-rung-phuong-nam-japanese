@@ -15,6 +15,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import pathlib
 import re
@@ -31,6 +32,7 @@ PROJECT_DIR = SCRIPT_DIR.parent
 DEFAULT_VI_DIR = PROJECT_DIR / "chapters" / "vi"
 DEFAULT_JA_DIR = PROJECT_DIR / "chapters" / "ja"
 DEFAULT_OUTPUT_FILE = PROJECT_DIR / "index.html"
+DEFAULT_JSON_DIR = PROJECT_DIR / "chapters" / "json"
 
 # ---------------------------------------------------------------------------
 # Argument parsing and logging setup
@@ -81,6 +83,20 @@ Examples:
         default=DEFAULT_OUTPUT_FILE,
         metavar="FILE",
         help=f"Output HTML file path (default: {DEFAULT_OUTPUT_FILE.relative_to(PROJECT_DIR)})",
+    )
+
+    parser.add_argument(
+        "--generate-json",
+        action="store_true",
+        help=f"Generate JSON files for each chapter in {DEFAULT_JSON_DIR.relative_to(PROJECT_DIR)}",
+    )
+
+    parser.add_argument(
+        "--json-dir",
+        type=pathlib.Path,
+        default=DEFAULT_JSON_DIR,
+        metavar="DIR",
+        help=f"Directory for JSON chapter files (default: {DEFAULT_JSON_DIR.relative_to(PROJECT_DIR)})",
     )
 
     parser.add_argument(
@@ -632,6 +648,141 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
     return html
 
 
+def generate_chapter_json(
+    chapter_num: int,
+    title: str,
+    content: str | list[str],
+    language: str,
+) -> dict:
+    """Generate JSON object for a single chapter.
+
+    Args:
+        chapter_num: Chapter number (1-20).
+        title: Chapter title.
+        content: Chapter content (string for Vietnamese, list of paragraphs for Japanese).
+        language: Language code ('vi' for Vietnamese, 'ja' for Japanese).
+
+    Returns:
+        Dictionary with chapter data in format: {id, title, content, language}.
+    """
+    # For Vietnamese, content is plain text
+    # For Japanese, join paragraphs into HTML with <p> tags
+    if language == "ja" and isinstance(content, list):
+        formatted_content = "\n".join(f"<p>{para}</p>" for para in content)
+    else:
+        formatted_content = content
+
+    return {
+        "id": chapter_num,
+        "title": title,
+        "content": formatted_content,
+        "language": language,
+    }
+
+
+def generate_all_chapter_json(
+    vi_dir: pathlib.Path,
+    ja_dir: pathlib.Path,
+    json_dir: pathlib.Path,
+) -> None:
+    """Generate JSON files for all chapters.
+
+    Args:
+        vi_dir: Directory containing Vietnamese chapter files.
+        ja_dir: Directory containing Japanese chapter files.
+        json_dir: Output directory for JSON files.
+    """
+    logger.info("Generating chapter JSON files")
+    logger.info("Vietnamese chapters from: %s", vi_dir)
+    logger.info("Japanese chapters from: %s", ja_dir)
+    logger.info("JSON output directory: %s", json_dir)
+
+    # Create output directory
+    json_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate Vietnamese chapter JSON files
+    for i in range(1, 21):
+        file_path = vi_dir / f"chapter{i}.txt"
+        if file_path.exists():
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                # Extract title (first line) and content (rest)
+                lines = content.strip().split("\n", 1)
+                title = lines[0].strip()
+                chapter_content = lines[1].strip() if len(lines) > 1 else ""
+
+                # Generate JSON object
+                chapter_json = generate_chapter_json(
+                    chapter_num=i,
+                    title=title,
+                    content=chapter_content,
+                    language="vi",
+                )
+
+                # Write to file
+                output_file = json_dir / f"chapter-{i}.json"
+                with open(output_file, "w", encoding="utf-8") as out_f:
+                    json.dump(chapter_json, out_f, ensure_ascii=False, indent=2)
+
+                logger.debug("Generated: %s", output_file)
+
+    logger.info("✅ Generated 20 Vietnamese chapter JSON files")
+
+    # Generate Japanese chapter JSON files
+    for i in range(1, 21):
+        file_path = ja_dir / f"chapter{i}_ja.txt"
+        if file_path.exists():
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                # Extract title (first line) and content (rest)
+                lines = content.strip().split("\n", 1)
+                title = lines[0].strip()
+
+                # Parse content into paragraphs with aggressive merging
+                if len(lines) > 1:
+                    chapter_lines = lines[1].split("\n")
+                    paragraphs = []
+                    current_para = []
+                    blank_count = 0
+
+                    for line in chapter_lines:
+                        line = line.strip()
+                        if line:
+                            current_para.append(line)
+                            blank_count = 0
+                        else:
+                            blank_count += 1
+                            # Only start new paragraph after 2+ consecutive blank lines,
+                            # OR if current paragraph is getting too long
+                            if blank_count >= 2 or len(current_para) >= 10:
+                                if current_para:
+                                    paragraphs.append(" ".join(current_para))
+                                    current_para = []
+
+                    # Don't forget the last paragraph
+                    if current_para:
+                        paragraphs.append(" ".join(current_para))
+                else:
+                    paragraphs = []
+
+                # Generate JSON object
+                chapter_json = generate_chapter_json(
+                    chapter_num=i,
+                    title=title,
+                    content=paragraphs,
+                    language="ja",
+                )
+
+                # Write to file
+                output_file = json_dir / f"chapter-ja-{i}.json"
+                with open(output_file, "w", encoding="utf-8") as out_f:
+                    json.dump(chapter_json, out_f, ensure_ascii=False, indent=2)
+
+                logger.debug("Generated: %s", output_file)
+
+    logger.info("✅ Generated 20 Japanese chapter JSON files")
+
+
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
@@ -661,6 +812,15 @@ def main(argv: list[str] | None = None) -> int:
     if not args.ja_dir.exists():
         logger.error("Japanese chapters directory not found: %s", args.ja_dir)
         return 1
+
+    # Generate chapter JSON files if requested
+    if args.generate_json:
+        try:
+            generate_all_chapter_json(args.vi_dir, args.ja_dir, args.json_dir)
+        except Exception as e:
+            logger.error("Failed to generate chapter JSON files: %s", e)
+            logger.debug("Exception details:", exc_info=True)
+            return 1
 
     # Generate HTML
     try:
