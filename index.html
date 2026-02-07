@@ -903,6 +903,62 @@ Lan thổi tới. Thường thường, đêm nào người trong chợ cũng xá
             }
         }
 
+        async function loadChapter(chapterNum, isJapanese = false) {
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const chapterDiv = document.getElementById(chapterId);
+
+            if (!chapterDiv) {
+                console.error(`Chapter div not found: ${chapterId}`);
+                return false;
+            }
+
+            // Check if already loaded
+            if (chapterDiv.dataset.loaded === 'true') {
+                return true;
+            }
+
+            try {
+                const jsonFile = isJapanese ? `chapters/json/chapter-ja-${chapterNum}.json` : `chapters/json/chapter-${chapterNum}.json`;
+                const response = await fetch(jsonFile);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load chapter: ${response.status}`);
+                }
+
+                const chapterData = await response.json();
+                const contentDiv = chapterDiv.querySelector('.chapter-content');
+
+                if (!contentDiv) {
+                    console.error(`Content div not found for chapter: ${chapterId}`);
+                    return false;
+                }
+
+                // For Vietnamese: wrap plain text in paragraphs
+                // For Japanese: content already has HTML with <p> tags
+                if (isJapanese) {
+                    contentDiv.innerHTML = chapterData.content;
+                } else {
+                    // Split Vietnamese content by double newlines and wrap in <p> tags
+                    const paragraphs = chapterData.content.split('
+
+').filter(p => p.trim());
+                    contentDiv.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('
+');
+                }
+
+                // Mark as loaded
+                chapterDiv.dataset.loaded = 'true';
+                return true;
+            } catch (error) {
+                console.error(`Error loading chapter ${chapterNum}:`, error);
+                const contentDiv = chapterDiv.querySelector('.chapter-content');
+                if (contentDiv) {
+                    contentDiv.innerHTML = '<p style="color: red;">Lỗi khi tải nội dung chương. Vui lòng thử lại.</p>';
+                }
+                return false;
+            }
+        }
+
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }

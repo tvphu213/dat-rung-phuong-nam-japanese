@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test loadChapter()</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .pending { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <h1>Testing loadChapter() Function</h1>
+    <div id="test-results"></div>
+
+    <hr>
+    <h2>Test Chapter Placeholder (Chapter 2)</h2>
+    <div class="chapter" id="chapter-2" data-chapter-num="2" data-loaded="false">
+        <h2 class="chapter-title">Chương 2: Trong tửu quán</h2>
+        <div class="chapter-content"></div>
+    </div>
+
+    <hr>
+    <h2>Test Chapter Placeholder (Japanese Chapter 2)</h2>
+    <div class="chapter" id="chapter-ja-2" data-chapter-num="2" data-loaded="false">
+        <h2 class="chapter-title">第2章: 居酒屋にて</h2>
+        <div class="chapter-content"></div>
+    </div>
+
+    <script>
+        // Copy the loadChapter function from index.html
+        async function loadChapter(chapterNum, isJapanese = false) {
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const chapterDiv = document.getElementById(chapterId);
+
+            if (!chapterDiv) {
+                console.error(`Chapter div not found: ${chapterId}`);
+                return false;
+            }
+
+            // Check if already loaded
+            if (chapterDiv.dataset.loaded === 'true') {
+                return true;
+            }
+
+            try {
+                const jsonFile = isJapanese ? `chapters/json/chapter-ja-${chapterNum}.json` : `chapters/json/chapter-${chapterNum}.json`;
+                const response = await fetch(jsonFile);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load chapter: ${response.status}`);
+                }
+
+                const chapterData = await response.json();
+                const contentDiv = chapterDiv.querySelector('.chapter-content');
+
+                if (!contentDiv) {
+                    console.error(`Content div not found for chapter: ${chapterId}`);
+                    return false;
+                }
+
+                // For Vietnamese: wrap plain text in paragraphs
+                // For Japanese: content already has HTML with <p> tags
+                if (isJapanese) {
+                    contentDiv.innerHTML = chapterData.content;
+                } else {
+                    // Split Vietnamese content by double newlines and wrap in <p> tags
+                    const paragraphs = chapterData.content.split('\n\n').filter(p => p.trim());
+                    contentDiv.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('\n');
+                }
+
+                // Mark as loaded
+                chapterDiv.dataset.loaded = 'true';
+                return true;
+            } catch (error) {
+                console.error(`Error loading chapter ${chapterNum}:`, error);
+                const contentDiv = chapterDiv.querySelector('.chapter-content');
+                if (contentDiv) {
+                    contentDiv.innerHTML = '<p style="color: red;">Lỗi khi tải nội dung chương. Vui lòng thử lại.</p>';
+                }
+                return false;
+            }
+        }
+
+        // Test function
+        async function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+
+            function addResult(test, status, message) {
+                const div = document.createElement('div');
+                div.className = `result ${status}`;
+                div.innerHTML = `<strong>${test}:</strong> ${message}`;
+                resultsDiv.appendChild(div);
+            }
+
+            addResult('Starting tests', 'pending', 'Running automated tests...');
+
+            // Test 1: Load Vietnamese chapter 2
+            try {
+                addResult('Test 1', 'pending', 'Loading Vietnamese chapter 2...');
+                const result1 = await loadChapter(2, false);
+
+                const chapter2 = document.getElementById('chapter-2');
+                const content = chapter2.querySelector('.chapter-content').innerHTML;
+                const isLoaded = chapter2.dataset.loaded === 'true';
+
+                if (result1 && isLoaded && content.includes('<p>')) {
+                    addResult('Test 1', 'success', `✓ Vietnamese chapter 2 loaded successfully (${content.length} chars, ${content.split('<p>').length - 1} paragraphs)`);
+                } else {
+                    addResult('Test 1', 'error', `✗ Failed: result=${result1}, loaded=${isLoaded}, hasContent=${content.length > 0}`);
+                }
+            } catch (error) {
+                addResult('Test 1', 'error', `✗ Error: ${error.message}`);
+            }
+
+            // Test 2: Load Japanese chapter 2
+            try {
+                addResult('Test 2', 'pending', 'Loading Japanese chapter 2...');
+                const result2 = await loadChapter(2, true);
+
+                const chapterJa2 = document.getElementById('chapter-ja-2');
+                const contentJa = chapterJa2.querySelector('.chapter-content').innerHTML;
+                const isLoadedJa = chapterJa2.dataset.loaded === 'true';
+
+                if (result2 && isLoadedJa && contentJa.includes('<p>')) {
+                    addResult('Test 2', 'success', `✓ Japanese chapter 2 loaded successfully (${contentJa.length} chars, ${contentJa.split('<p>').length - 1} paragraphs)`);
+                } else {
+                    addResult('Test 2', 'error', `✗ Failed: result=${result2}, loaded=${isLoadedJa}, hasContent=${contentJa.length > 0}`);
+                }
+            } catch (error) {
+                addResult('Test 2', 'error', `✗ Error: ${error.message}`);
+            }
+
+            // Test 3: Try loading same chapter again (should be instant)
+            try {
+                addResult('Test 3', 'pending', 'Testing idempotency (loading chapter 2 again)...');
+                const result3 = await loadChapter(2, false);
+
+                if (result3) {
+                    addResult('Test 3', 'success', '✓ Idempotency check passed (already loaded chapter returns true)');
+                } else {
+                    addResult('Test 3', 'error', '✗ Idempotency check failed');
+                }
+            } catch (error) {
+                addResult('Test 3', 'error', `✗ Error: ${error.message}`);
+            }
+
+            addResult('All tests completed', 'success', '✓ Test suite finished');
+        }
+
+        // Run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
