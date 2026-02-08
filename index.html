@@ -708,7 +708,8 @@
             const contentElement = chapterElement.querySelector('.chapter-content');
 
             // Show loading indicator
-            contentElement.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p class="loading-text">Loading...</p></div>';
+            const loadingText = isJapanese ? '読み込み中...' : 'Đang tải...';
+            contentElement.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p class="loading-text">${loadingText}</p></div>`;
 
             try {
                 // Build file path
