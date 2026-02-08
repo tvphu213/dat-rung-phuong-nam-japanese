@@ -1,0 +1,74 @@
+================================================================================
+SUBTASK 3-4: ADD LOADING STATES AND ERROR HANDLING
+================================================================================
+
+STATUS: ✅ COMPLETED
+
+IMPLEMENTATION DETAILS
+----------------------
+
+1. LOADING SPINNER CSS
+   - Animated rotating circle with @keyframes spin animation
+   - Forest-green color matching site theme (#2d5016)
+   - 50px x 50px size, 4px border
+   - Flexbox-centered layout with min-height: 200px
+   - Includes loading text below spinner
+
+2. ERROR MESSAGE STYLING
+   - Red theme (#d32f2f) with light pink background (#ffebee)
+   - 4px left border accent for visibility
+   - Rounded corners (4px border-radius)
+   - Bold title with descriptive message below
+
+3. ENHANCED loadChapter() FUNCTION
+   
+   Before Fetch:
+   - Shows loading spinner immediately
+   - Displays bilingual text:
+     * Vietnamese: "Đang tải..."
+     * Japanese: "読み込み中..."
+   
+   On Success:
+   - Replaces spinner with chapter content
+   - Marks chapter as loaded (data-loaded="true")
+   
+   On Error:
+   - Removes spinner
+   - Shows styled error message with:
+     * Vietnamese: "Lỗi - Không thể tải nội dung chương. Vui lòng kiểm tra kết nối mạng và thử lại."
+     * Japanese: "エラー - この章の読み込みに失敗しました。ネットワーク接続を確認して、もう一度お試しください。"
+
+VERIFICATION
+------------
+
+Server: http://localhost:8000
+
+Test Scenarios:
+1. ✓ Loading Spinner - Click any TOC item (chapters 2-20)
+2. ✓ Scroll Loading - Scroll down to trigger lazy loading
+3. ✓ Japanese Support - Switch to Japanese tab and test
+4. ✓ Error Handling - Enable Network offline mode in DevTools
+5. ✓ File Size - Still under 100KB (92KB)
+
+FILES MODIFIED
+--------------
+- scripts/rebuild_html.py (added CSS and enhanced loadChapter)
+- index.html (regenerated with new features)
+
+FILES CREATED
+-------------
+- VERIFICATION_GUIDE.md (detailed testing instructions)
+- test-loading-spinner.html (visual demo of all states)
+
+COMMIT
+------
+SHA: 64826a0
+Message: auto-claude: subtask-3-4 - Add loading states and error handling
+
+NEXT PHASE
+----------
+Phase 4: Integration and Testing
+- Full rebuild and file size verification
+- End-to-end lazy loading verification
+
+================================================================================
