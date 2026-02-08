@@ -517,6 +517,53 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
                 padding: 0.7rem 0.5rem;
             }
         }
+
+        /* Loading spinner styles */
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            min-height: 200px;
+        }
+
+        .spinner {
+            border: 4px solid var(--sand-beige);
+            border-top: 4px solid var(--forest-green);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 1.5rem;
+            border-left: 4px solid #d32f2f;
+            border-radius: 4px;
+            margin: 2rem 0;
+            font-size: 1rem;
+        }
+
+        .error-message strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 
@@ -666,6 +713,21 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
                 return true;
             }
 
+            const contentDiv = chapterDiv.querySelector('.chapter-content');
+            if (!contentDiv) {
+                console.error(`Content div not found for chapter: ${chapterId}`);
+                return false;
+            }
+
+            // Show loading spinner
+            const loadingText = isJapanese ? '読み込み中...' : 'Đang tải...';
+            contentDiv.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <div class="loading-text">${loadingText}</div>
+                </div>
+            `;
+
             try {
                 const jsonFile = isJapanese ? `chapters/json/chapter-ja-${chapterNum}.json` : `chapters/json/chapter-${chapterNum}.json`;
                 const response = await fetch(jsonFile);
@@ -675,12 +737,6 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
                 }
 
                 const chapterData = await response.json();
-                const contentDiv = chapterDiv.querySelector('.chapter-content');
-
-                if (!contentDiv) {
-                    console.error(`Content div not found for chapter: ${chapterId}`);
-                    return false;
-                }
 
                 // For Vietnamese: wrap plain text in paragraphs
                 // For Japanese: content already has HTML with <p> tags
@@ -697,10 +753,19 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
                 return true;
             } catch (error) {
                 console.error(`Error loading chapter ${chapterNum}:`, error);
-                const contentDiv = chapterDiv.querySelector('.chapter-content');
-                if (contentDiv) {
-                    contentDiv.innerHTML = '<p style="color: red;">Lỗi khi tải nội dung chương. Vui lòng thử lại.</p>';
-                }
+
+                // Show user-friendly error message
+                const errorTitle = isJapanese ? 'エラー' : 'Lỗi';
+                const errorMessage = isJapanese
+                    ? 'この章の読み込みに失敗しました。ネットワーク接続を確認して、もう一度お試しください。'
+                    : 'Không thể tải nội dung chương. Vui lòng kiểm tra kết nối mạng và thử lại.';
+
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        <strong>${errorTitle}</strong>
+                        ${errorMessage}
+                    </div>
+                `;
                 return false;
             }
         }
