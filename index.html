@@ -727,6 +727,12 @@
             }
         });
 
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', function () {
+            const chapterNum = getChapterFromURL();
+            scrollToChapter(chapterNum);
+        });
+
         // Auto-load Chapter 1 on page load
         document.addEventListener('DOMContentLoaded', function () {
             loadChapter(1, false);
