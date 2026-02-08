@@ -602,13 +602,18 @@
             scrollToTop();
         }
 
-        function scrollToChapter(chapterNum) {
+        async function scrollToChapter(chapterNum) {
             const activeTab = document.querySelector('.tab-content.active');
             const isJapanese = activeTab.id === 'japanese-content';
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
             const chapter = document.getElementById(chapterId);
 
             if (chapter) {
+                // Load chapter if not already loaded
+                if (chapter.dataset.loaded !== 'true') {
+                    await loadChapter(chapterNum, isJapanese);
+                }
+
                 chapter.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
