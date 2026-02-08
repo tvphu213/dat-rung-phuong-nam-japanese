@@ -946,8 +946,43 @@
             // Update dropdown selection
             updateDropdownSelection(chapter, isJapanese);
 
+            // Update navigation button states
+            updateNavigationButtons(chapter);
+
             // Scroll to top
             scrollToTop();
+        }
+
+        // Update navigation button states based on current chapter
+        function updateNavigationButtons(chapterNum) {
+            const prevButtons = document.querySelectorAll('.prev-btn');
+            const nextButtons = document.querySelectorAll('.next-btn');
+
+            // Disable Previous button on chapter 1
+            prevButtons.forEach(btn => {
+                btn.disabled = (chapterNum === 1);
+            });
+
+            // Disable Next button on chapter 20
+            nextButtons.forEach(btn => {
+                btn.disabled = (chapterNum === 20);
+            });
+        }
+
+        // Navigate to previous chapter
+        function navigatePrevious() {
+            const currentChapter = getChapterFromURL();
+            if (currentChapter > 1) {
+                navigateToChapter(currentChapter - 1);
+            }
+        }
+
+        // Navigate to next chapter
+        function navigateNext() {
+            const currentChapter = getChapterFromURL();
+            if (currentChapter < 20) {
+                navigateToChapter(currentChapter + 1);
+            }
         }
 
         // Auto-load chapter from URL on page load
@@ -976,6 +1011,9 @@
 
             // Set initial selection
             updateDropdownSelection(chapterNum, isJapanese);
+
+            // Update navigation button states
+            updateNavigationButtons(chapterNum);
 
             // Load chapter content if not already loaded
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
