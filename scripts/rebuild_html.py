@@ -699,6 +699,53 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
             }
         }
 
+        // Intersection Observer for lazy loading chapters on scroll
+        function setupLazyLoading() {
+            const options = {
+                root: null, // viewport
+                rootMargin: '500px', // Load 500px before entering viewport
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const chapterDiv = entry.target;
+
+                        // Check if already loaded
+                        if (chapterDiv.dataset.loaded === 'true') {
+                            observer.unobserve(chapterDiv);
+                            return;
+                        }
+
+                        // Determine if this is a Japanese chapter
+                        const isJapanese = chapterDiv.id.startsWith('chapter-ja-');
+
+                        // Extract chapter number from ID
+                        const chapterNum = parseInt(chapterDiv.dataset.chapterNum);
+
+                        if (chapterNum) {
+                            // Load the chapter
+                            loadChapter(chapterNum, isJapanese).then(success => {
+                                if (success) {
+                                    // Stop observing this chapter after successful load
+                                    observer.unobserve(chapterDiv);
+                                }
+                            });
+                        }
+                    }
+                });
+            }, options);
+
+            // Observe all chapter placeholders with data-loaded='false'
+            document.querySelectorAll('.chapter[data-loaded="false"]').forEach(chapter => {
+                observer.observe(chapter);
+            });
+        }
+
+        // Initialize lazy loading when DOM is ready
+        document.addEventListener('DOMContentLoaded', setupLazyLoading);
+
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
