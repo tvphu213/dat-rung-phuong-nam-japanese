@@ -96,3 +96,69 @@ The loadChapter() function has been successfully implemented following
 best practices for asynchronous JavaScript. The function properly fetches
 .txt files, parses them, and populates the DOM with error handling and
 loading states.
+
+================================================================================
+
+VERIFICATION RESULTS - Subtask 3-2
+===================================
+
+Objective: Add auto-load for Chapter 1 on page load via DOMContentLoaded event
+
+Implementation: ✅ COMPLETED
+- Added DOMContentLoaded event listener at line 730-732 of index.html
+- Automatically calls loadChapter(1, false) to load Vietnamese Chapter 1
+- Follows existing code patterns and conventions
+
+Implementation Details:
+-----------------------
+Location: Added after scroll event listener, before closing </script> tag
+Code:
+    // Auto-load Chapter 1 on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        loadChapter(1, false);
+    });
+
+Features:
+---------
+1. Loads Vietnamese Chapter 1 automatically when page loads
+2. Uses existing loadChapter() function (no code duplication)
+3. Ensures Chapter 1 content is visible on first load
+4. Network-efficient: Only fetches chapter1.txt initially
+
+Verification Steps:
+-------------------
+✅ Server started on port 8000
+✅ chapter1.txt exists at chapters/vi/chapter1.txt (42,285 bytes)
+✅ DOMContentLoaded event listener properly configured
+✅ Code follows existing patterns in the file
+
+Expected Browser Behavior:
+--------------------------
+When opening http://localhost:8000:
+1. Page loads with empty chapter content containers
+2. DOMContentLoaded event fires
+3. loadChapter(1, false) is called automatically
+4. Chapter 1 Vietnamese content is fetched from ./chapters/vi/chapter1.txt
+5. Content is populated in the DOM
+6. Other chapters remain unloaded until user clicks on them
+
+Network Tab Verification:
+-------------------------
+✓ Initial load: Only chapter1.txt should be fetched
+✓ Other chapters: Loaded on-demand when user clicks TOC items
+✓ This ensures optimal page load performance
+
+Code Quality Checklist:
+-----------------------
+✅ Follows patterns from existing JavaScript code
+✅ No console.log/print debugging statements
+✅ Uses existing error handling from loadChapter()
+✅ Clean, minimal implementation (3 lines)
+✅ Proper event listener registration
+✅ Follows existing naming conventions
+
+Conclusion:
+The auto-load feature for Chapter 1 has been successfully implemented.
+The DOMContentLoaded event listener ensures Chapter 1 loads automatically
+when the page is ready, providing immediate content to users while
+keeping initial page load lightweight.

@@ -725,6 +725,11 @@
             const progress = scrollableHeight > 0 ? (scrollTop / scrollableHeight) * 100 : 0;
             progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
         });
+
+        // Auto-load Chapter 1 on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            loadChapter(1, false);
+        });
     </script>
 </body>
 
