@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Spinner Test</title>
+    <style>
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%);
+            padding: 2rem;
+        }
+
+        :root {
+            --forest-green: #2d5016;
+            --sand-beige: #f5e6d3;
+            --text-light: #555;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--forest-green);
+            text-align: center;
+        }
+
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+        }
+
+        h2 {
+            color: var(--forest-green);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Loading spinner styles (copied from rebuild_html.py) */
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            min-height: 200px;
+        }
+
+        .spinner {
+            border: 4px solid var(--sand-beige);
+            border-top: 4px solid var(--forest-green);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* Error message styles (copied from rebuild_html.py) */
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 1.5rem;
+            border-left: 4px solid #d32f2f;
+            border-radius: 4px;
+            margin: 2rem 0;
+            font-size: 1rem;
+        }
+
+        .error-message strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🎨 Loading States & Error Handling Demo</h1>
+
+        <div class="test-section">
+            <h2>1. Vietnamese Loading Spinner</h2>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <div class="loading-text">Đang tải...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Japanese Loading Spinner</h2>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <div class="loading-text">読み込み中...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Vietnamese Error Message</h2>
+            <div class="error-message">
+                <strong>Lỗi</strong>
+                Không thể tải nội dung chương. Vui lòng kiểm tra kết nối mạng và thử lại.
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Japanese Error Message</h2>
+            <div class="error-message">
+                <strong>エラー</strong>
+                この章の読み込みに失敗しました。ネットワーク接続を確認して、もう一度お試しください。
+            </div>
+        </div>
+    </div>
+</body>
+</html>
