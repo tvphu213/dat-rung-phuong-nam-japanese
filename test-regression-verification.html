@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Test - Existing Functionality</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .test-card {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2d5016;
+            margin-top: 0;
+            border-bottom: 3px solid #4a7c2c;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #4a7c2c;
+            margin-top: 15px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border-left: 5px solid #2d5016;
+        }
+        .checklist-item {
+            margin: 12px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        .checklist-item:hover {
+            border-color: #4a7c2c;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .checklist-item label {
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .checklist-item.critical {
+            border-left: 4px solid #f44336;
+        }
+        .instruction {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #2196f3;
+        }
+        .warning {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #ff9800;
+        }
+        .success {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #4caf50;
+        }
+        button {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 8px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #4a7c2c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button.secondary {
+            background: #666;
+        }
+        button.secondary:hover {
+            background: #888;
+        }
+        button.danger {
+            background: #f44336;
+        }
+        button.danger:hover {
+            background: #d32f2f;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .badge-critical {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .badge-important {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        .badge-normal {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+            color: #2d5016;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .test-steps ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .test-steps li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        code {
+            background: #e8e8e8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Regression Test Suite</h1>
+        <p>Comprehensive verification that all existing functionality works after prefetch implementation</p>
+    </div>
+
+    <div class="test-card">
+        <h2>📊 Test Progress</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">0%</div>
+        </div>
+        <div id="progressText" style="text-align: center; color: #666; margin-top: 10px;">
+            0 of 0 tests completed
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🎯 Test Setup</h2>
+        <div class="warning">
+            <strong>⚠️ Prerequisites:</strong>
+            <ul>
+                <li>Start local server: <code>python3 -m http.server 8000</code></li>
+                <li>Open application: <a href="http://localhost:8000/index.html" target="_blank">http://localhost:8000/index.html</a></li>
+                <li>Open DevTools (F12) - Console tab</li>
+                <li>Keep this test page open for reference</li>
+            </ul>
+        </div>
+        <button onclick="openApp()">🚀 Open Application in New Tab</button>
+    </div>
+
+    <!-- Navigation Tests -->
+    <div class="test-card">
+        <h2>1️⃣ Navigation Features <span class="category-badge badge-critical">CRITICAL</span></h2>
+
+        <div class="test-section">
+            <h3>Table of Contents Navigation</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Open the application</li>
+                        <li>Use the chapter selector dropdown</li>
+                        <li>Select different chapters (1, 5, 10, 15, 20)</li>
+                        <li>Verify each chapter loads correctly</li>
+                        <li>Verify chapter content displays</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="nav1" onchange="updateProgress()">
+                <label for="nav1">Chapter selector dropdown works - all chapters load correctly</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Previous/Next Buttons</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate to chapter 5</li>
+                        <li>Click "← Previous" button</li>
+                        <li>Verify you're now on chapter 4</li>
+                        <li>Click "Next →" button twice</li>
+                        <li>Verify you're now on chapter 6</li>
+                        <li>Test at chapter 1 - Previous button should be disabled</li>
+                        <li>Test at chapter 20 - Next button should be disabled</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="nav2" onchange="updateProgress()">
+                <label for="nav2">Previous/Next buttons work correctly and disable at boundaries</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>URL Hash Navigation</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Manually navigate to: <code>http://localhost:8000/index.html#/chapter/7</code></li>
+                        <li>Verify chapter 7 loads</li>
+                        <li>Try: <code>#/chapter/1</code>, <code>#/chapter/15</code>, <code>#/chapter/20</code></li>
+                        <li>Verify all load correctly</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="nav3" onchange="updateProgress()">
+                <label for="nav3">URL hash navigation (#/chapter/N) works correctly</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Browser Back/Forward Buttons</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate through chapters: 1 → 2 → 3 → 4</li>
+                        <li>Click browser Back button twice</li>
+                        <li>Verify you're on chapter 2</li>
+                        <li>Click browser Forward button</li>
+                        <li>Verify you're on chapter 3</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="nav4" onchange="updateProgress()">
+                <label for="nav4">Browser back/forward navigation works correctly</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Tab Tests -->
+    <div class="test-card">
+        <h2>2️⃣ Language Tab Switching <span class="category-badge badge-critical">CRITICAL</span></h2>
+
+        <div class="test-section">
+            <h3>Vietnamese ↔ Japanese Tab Switching</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Load chapter 5 (defaults to Vietnamese)</li>
+                        <li>Verify Vietnamese content displays</li>
+                        <li>Click Japanese tab (日本語)</li>
+                        <li>Verify Japanese content displays for chapter 5</li>
+                        <li>Click Vietnamese tab (Tiếng Việt)</li>
+                        <li>Verify returns to Vietnamese content</li>
+                        <li>Test with chapters 1, 10, 20</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="lang1" onchange="updateProgress()">
+                <label for="lang1">Tab switching between Vietnamese and Japanese works correctly</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Tab Persistence During Navigation</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Switch to Japanese tab</li>
+                        <li>Navigate to chapter 3</li>
+                        <li>Verify Japanese tab stays active (Japanese content shown)</li>
+                        <li>Click "Next →" button</li>
+                        <li>Verify still on Japanese tab with Japanese content for chapter 4</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="lang2" onchange="updateProgress()">
+                <label for="lang2">Selected language tab persists during navigation</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading & Display Tests -->
+    <div class="test-card">
+        <h2>3️⃣ Loading & Display Features <span class="category-badge badge-important">IMPORTANT</span></h2>
+
+        <div class="test-section">
+            <h3>Loading Spinner</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Clear browser cache (DevTools → Network → Clear)</li>
+                        <li>Navigate to chapter 1</li>
+                        <li>Observe loading spinner appears briefly</li>
+                        <li>Content loads and replaces spinner</li>
+                        <li>Test with slow 3G throttling for better visibility</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="load1" onchange="updateProgress()">
+                <label for="load1">Loading spinner appears correctly during chapter load</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Chapter Content Display</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Load chapter 1</li>
+                        <li>Verify chapter title displays correctly</li>
+                        <li>Verify chapter content (paragraphs) display correctly</li>
+                        <li>Check formatting: text justification, line spacing</li>
+                        <li>Test multiple chapters (1, 5, 10, 20)</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="load2" onchange="updateProgress()">
+                <label for="load2">Chapter titles and content display correctly with proper formatting</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Error Handling</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Open DevTools Console</li>
+                        <li>Navigate through multiple chapters</li>
+                        <li>Switch between language tabs</li>
+                        <li>Verify no console errors appear</li>
+                        <li>Check for warnings or failed network requests</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="load3" onchange="updateProgress()">
+                <label for="load3">No console errors during normal operation</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- LocalStorage Tests -->
+    <div class="test-card">
+        <h2>4️⃣ LocalStorage Reading Position <span class="category-badge badge-important">IMPORTANT</span></h2>
+
+        <div class="test-section">
+            <h3>Save Reading Position</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate to chapter 7</li>
+                        <li>Close the browser tab/window</li>
+                        <li>Re-open: <code>http://localhost:8000/index.html</code></li>
+                        <li>Verify it returns to chapter 7 (saved position)</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="storage1" onchange="updateProgress()">
+                <label for="storage1">Reading position saves to localStorage</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Restore Reading Position</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate to chapter 12</li>
+                        <li>Refresh the page (F5)</li>
+                        <li>Verify returns to chapter 12</li>
+                        <li>Test with different chapters (3, 15, 18)</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="storage2" onchange="updateProgress()">
+                <label for="storage2">Reading position restores correctly on page refresh</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI/UX Tests -->
+    <div class="test-card">
+        <h2>5️⃣ UI/UX Features <span class="category-badge badge-normal">NORMAL</span></h2>
+
+        <div class="test-section">
+            <h3>Back to Top Button</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Load a long chapter (e.g., chapter 13)</li>
+                        <li>Scroll down the page</li>
+                        <li>Verify "Back to top" button appears (bottom right)</li>
+                        <li>Click the button</li>
+                        <li>Verify page scrolls to top smoothly</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="ui1" onchange="updateProgress()">
+                <label for="ui1">Back to top button appears on scroll and works correctly</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Responsive Design</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Open DevTools (F12)</li>
+                        <li>Toggle device toolbar (Ctrl+Shift+M)</li>
+                        <li>Test mobile view (375x667 - iPhone)</li>
+                        <li>Test tablet view (768x1024 - iPad)</li>
+                        <li>Verify layout adapts correctly</li>
+                        <li>Verify buttons remain usable</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="ui2" onchange="updateProgress()">
+                <label for="ui2">Responsive design works on mobile and tablet views</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Smooth Scrolling</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate between chapters using Previous/Next buttons</li>
+                        <li>Verify page scrolls to top smoothly</li>
+                        <li>Use chapter selector dropdown</li>
+                        <li>Verify smooth scroll behavior</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="ui3" onchange="updateProgress()">
+                <label for="ui3">Smooth scrolling works during navigation</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prefetch Integration Tests -->
+    <div class="test-card">
+        <h2>6️⃣ Prefetch Integration <span class="category-badge badge-critical">CRITICAL</span></h2>
+
+        <div class="test-section">
+            <h3>Prefetch Doesn't Break Navigation</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate rapidly through chapters 1 → 5 using Next button</li>
+                        <li>Verify all chapters load correctly</li>
+                        <li>No errors in console</li>
+                        <li>No broken content</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="prefetch1" onchange="updateProgress()">
+                <label for="prefetch1">Prefetch doesn't interfere with normal navigation</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Prefetch Link Element Management</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Open DevTools Console</li>
+                        <li>Run: <code>document.querySelectorAll('link[rel="prefetch"][data-chapter-prefetch]').length</code></li>
+                        <li>Verify result is 0 or 1 (not multiple prefetch links)</li>
+                        <li>Navigate to different chapters</li>
+                        <li>Re-run command, should still be 0 or 1</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="prefetch2" onchange="updateProgress()">
+                <label for="prefetch2">Only one prefetch link exists at a time (proper cleanup)</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Prefetch Doesn't Cause Memory Leaks</h3>
+            <div class="instruction">
+                <div class="test-steps">
+                    <ol>
+                        <li>Navigate through all 20 chapters sequentially</li>
+                        <li>Monitor DevTools Memory tab (optional)</li>
+                        <li>Verify smooth navigation throughout</li>
+                        <li>No browser slowdown or freezing</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="checklist-item critical">
+                <input type="checkbox" id="prefetch3" onchange="updateProgress()">
+                <label for="prefetch3">No performance degradation after navigating through all chapters</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Summary -->
+    <div class="test-card">
+        <h2>📋 Test Summary</h2>
+        <button onclick="generateReport()">📊 Generate Final Report</button>
+        <button class="secondary" onclick="resetAll()">🔄 Reset All Tests</button>
+        <button class="secondary" onclick="exportResults()">💾 Export Results</button>
+
+        <div id="finalReport" style="display: none; margin-top: 20px;">
+            <div class="success" id="reportSuccess" style="display: none;">
+                <h3>✅ All Tests Passed!</h3>
+                <p>No regressions detected. The prefetch implementation is working correctly without breaking existing functionality.</p>
+            </div>
+            <div class="warning" id="reportWarning" style="display: none;">
+                <h3>⚠️ Some Tests Failed</h3>
+                <p id="warningMessage"></p>
+            </div>
+            <div id="reportDetails" style="margin-top: 15px; background: #f9f9f9; padding: 20px; border-radius: 6px;">
+                <pre id="reportContent" style="margin: 0; white-space: pre-wrap; font-family: monospace;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const totalTests = 17;
+
+        function updateProgress() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checked / totalTests) * 100);
+
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+            progressText.textContent = `${checked} of ${totalTests} tests completed`;
+        }
+
+        function openApp() {
+            window.open('http://localhost:8000/index.html', '_blank');
+            setTimeout(() => {
+                alert('Application opened!\n\nBegin testing all features and check them off as you verify they work correctly.');
+            }, 500);
+        }
+
+        function generateReport() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checked / totalTests) * 100);
+
+            const reportDiv = document.getElementById('finalReport');
+            const reportSuccess = document.getElementById('reportSuccess');
+            const reportWarning = document.getElementById('reportWarning');
+            const warningMessage = document.getElementById('warningMessage');
+            const reportContent = document.getElementById('reportContent');
+
+            let report = `REGRESSION TEST REPORT\n`;
+            report += `========================\n\n`;
+            report += `Date: ${new Date().toLocaleString()}\n`;
+            report += `Total Tests: ${totalTests}\n`;
+            report += `Passed: ${checked}\n`;
+            report += `Failed: ${totalTests - checked}\n`;
+            report += `Success Rate: ${percentage}%\n`;
+            report += `Status: ${percentage === 100 ? 'PASS ✅' : 'FAIL ❌'}\n\n`;
+
+            // Category breakdown
+            report += `Category Breakdown:\n`;
+            report += `-------------------\n`;
+            report += `Navigation Features: ${document.querySelectorAll('[id^="nav"]:checked').length}/4\n`;
+            report += `Language Tab Switching: ${document.querySelectorAll('[id^="lang"]:checked').length}/2\n`;
+            report += `Loading & Display: ${document.querySelectorAll('[id^="load"]:checked').length}/3\n`;
+            report += `LocalStorage: ${document.querySelectorAll('[id^="storage"]:checked').length}/2\n`;
+            report += `UI/UX Features: ${document.querySelectorAll('[id^="ui"]:checked').length}/3\n`;
+            report += `Prefetch Integration: ${document.querySelectorAll('[id^="prefetch"]:checked').length}/3\n\n`;
+
+            // Critical tests
+            const criticalPassed = document.querySelectorAll('.critical input:checked').length;
+            const criticalTotal = document.querySelectorAll('.critical input').length;
+            report += `Critical Tests: ${criticalPassed}/${criticalTotal}\n`;
+
+            if (percentage === 100) {
+                reportSuccess.style.display = 'block';
+                reportWarning.style.display = 'none';
+                report += `\n✅ VERDICT: All tests passed. No regressions detected.\n`;
+                report += `The prefetch implementation is working correctly.\n`;
+            } else {
+                reportSuccess.style.display = 'none';
+                reportWarning.style.display = 'block';
+                warningMessage.textContent = `${totalTests - checked} test(s) failed. Review the checklist above to identify issues.`;
+                report += `\n❌ VERDICT: Some tests failed. Review and fix issues.\n`;
+
+                if (criticalPassed < criticalTotal) {
+                    report += `⚠️ CRITICAL: ${criticalTotal - criticalPassed} critical test(s) failed!\n`;
+                }
+            }
+
+            reportContent.textContent = report;
+            reportDiv.style.display = 'block';
+        }
+
+        function resetAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('finalReport').style.display = 'none';
+            updateProgress();
+        }
+
+        function exportResults() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = Math.round((checked / totalTests) * 100);
+
+            const results = {
+                timestamp: new Date().toISOString(),
+                total: totalTests,
+                passed: checked,
+                failed: totalTests - checked,
+                percentage: percentage,
+                status: percentage === 100 ? 'PASS' : 'FAIL',
+                categories: {
+                    navigation: document.querySelectorAll('[id^="nav"]:checked').length,
+                    language: document.querySelectorAll('[id^="lang"]:checked').length,
+                    loading: document.querySelectorAll('[id^="load"]:checked').length,
+                    storage: document.querySelectorAll('[id^="storage"]:checked').length,
+                    ui: document.querySelectorAll('[id^="ui"]:checked').length,
+                    prefetch: document.querySelectorAll('[id^="prefetch"]:checked').length
+                }
+            };
+
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `regression-test-results-${Date.now()}.json`;
+            link.click();
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>

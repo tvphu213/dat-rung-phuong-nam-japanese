@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefetch Performance Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d5016;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #4a7c2c;
+            margin-top: 0;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #4a7c2c;
+            margin-top: 15px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .pass {
+            background: #4caf50;
+            color: white;
+        }
+        .fail {
+            background: #f44336;
+            color: white;
+        }
+        .pending {
+            background: #ff9800;
+            color: white;
+        }
+        code {
+            background: #e8e8e8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .instruction {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #2196f3;
+        }
+        .warning {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #ff9800;
+        }
+        .success {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 5px solid #4caf50;
+        }
+        button {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 8px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #4a7c2c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button.secondary {
+            background: #666;
+        }
+        button.secondary:hover {
+            background: #888;
+        }
+        .test-step {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+        }
+        .checklist-item {
+            margin: 12px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #2d5016;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .checklist-item label {
+            cursor: pointer;
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+            color: #2d5016;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .metric {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .network-screenshot {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        ol {
+            line-height: 1.8;
+        }
+        ol li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚡ Prefetch Performance Verification</h1>
+    <p style="color: #666; font-size: 16px;">Comprehensive test to verify prefetch improves perceived performance</p>
+
+    <div class="test-card">
+        <h2>📋 Setup Instructions</h2>
+        <div class="warning">
+            <strong>⚠️ Important Setup Requirements:</strong>
+            <ol>
+                <li>Start a local web server (prefetch doesn't work with file:// protocol in some browsers)</li>
+                <li>Open Chrome DevTools (F12)</li>
+                <li>Go to Network tab</li>
+                <li><strong>DO NOT enable "Disable cache"</strong> - prefetch requires cache to work</li>
+                <li>Optionally: Enable "Slow 3G" throttling to see performance difference more clearly</li>
+            </ol>
+        </div>
+        <div class="instruction">
+            <strong>🚀 Start Local Server:</strong>
+            <div class="network-screenshot">
+                # Option 1: Python
+                python3 -m http.server 8000
+
+                # Option 2: Node.js (if you have npx)
+                npx serve .
+
+                # Then open: http://localhost:8000/index.html
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🧪 Test 1: Vietnamese Chapters (1-19)</h2>
+
+        <div class="test-step">
+            <h3>Step 1: Verify Prefetch Appears</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Click "Open Chapter 1 (Vietnamese)" below</li>
+                    <li>Wait for chapter to load</li>
+                    <li>In Network tab, filter by "chapter2"</li>
+                    <li>You should see <code>chapter2.txt</code> with type "prefetch" or "fetch"</li>
+                    <li>Note: Request may show as "pending" or complete with small size</li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(1, false)">📖 Open Chapter 1 (Vietnamese)</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="vn1">
+                <label for="vn1">Chapter 2 prefetch request appears in Network tab</label>
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h3>Step 2: Measure Performance Improvement</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Clear Network tab (trash icon)</li>
+                    <li>In the opened chapter 1 page, click "Next →" button</li>
+                    <li>Observe chapter 2 loading time</li>
+                    <li>Look for <code>chapter2.txt</code> in Network tab</li>
+                    <li>It should load FROM CACHE (very fast, ~0-50ms)</li>
+                </ol>
+            </div>
+            <div class="success">
+                <strong>✅ Expected Behavior:</strong>
+                <div class="metric">Without Prefetch: 100-500ms</div>
+                <div class="metric">With Prefetch: 0-50ms (from cache)</div>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="vn2">
+                <label for="vn2">Chapter 2 loads significantly faster (from cache)</label>
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h3>Step 3: Test Multiple Chapters</h3>
+            <div class="instruction">
+                <p>Test the prefetch works consistently across chapters:</p>
+                <ol>
+                    <li>From chapter 2, click "Next →" to go to chapter 3</li>
+                    <li>Verify chapter 4 prefetch appears</li>
+                    <li>From chapter 3, click "Next →" to go to chapter 4</li>
+                    <li>Verify chapter 4 loads from cache</li>
+                    <li>Repeat for chapters 5-10 to verify consistency</li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(5, false)">📖 Open Chapter 5</button>
+            <button onclick="openTestChapter(10, false)">📖 Open Chapter 10</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="vn3">
+                <label for="vn3">Prefetch works consistently for chapters 1-19</label>
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h3>Step 4: Test Edge Case (Chapter 20)</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Navigate to chapter 19</li>
+                    <li>Verify prefetch for chapter 20 appears</li>
+                    <li>Navigate to chapter 20</li>
+                    <li>Verify NO prefetch for chapter 21 (doesn't exist)</li>
+                    <li>Check Network tab - should not see any request for chapter21.txt</li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(19, false)">📖 Open Chapter 19</button>
+            <button onclick="openTestChapter(20, false)">📖 Open Chapter 20</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="vn4">
+                <label for="vn4">Chapter 20 does NOT prefetch chapter 21</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🇯🇵 Test 2: Japanese Chapters (1-19)</h2>
+
+        <div class="test-step">
+            <h3>Step 1: Japanese Tab Prefetch</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Click "Open Chapter 1 (Japanese)" below</li>
+                    <li>Switch to Japanese tab (日本語)</li>
+                    <li>In Network tab, filter by "_ja"</li>
+                    <li>You should see <code>chapter2_ja.txt</code> prefetch</li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(1, true)">📖 Open Chapter 1 (Japanese)</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="ja1">
+                <label for="ja1">Japanese chapter prefetch appears (chapter2_ja.txt)</label>
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h3>Step 2: Performance Verification</h3>
+            <div class="instruction">
+                <ol>
+                    <li>From Japanese chapter 1, click "Next →"</li>
+                    <li>Chapter 2 should load from cache (fast)</li>
+                    <li>Verify chapter 3_ja.txt prefetch appears</li>
+                </ol>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="ja2">
+                <label for="ja2">Japanese chapters load faster with prefetch</label>
+            </div>
+        </div>
+
+        <div class="test-step">
+            <h3>Step 3: Edge Case (Chapter 20 Japanese)</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Navigate to Japanese chapter 20</li>
+                    <li>Verify NO prefetch for chapter21_ja.txt</li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(20, true)">📖 Open Chapter 20 (Japanese)</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="ja3">
+                <label for="ja3">Japanese chapter 20 does NOT prefetch chapter 21</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🔄 Test 3: Tab Switching Behavior</h2>
+
+        <div class="test-step">
+            <h3>Prefetch Updates on Tab Switch</h3>
+            <div class="instruction">
+                <ol>
+                    <li>Open chapter 5 (defaults to Vietnamese)</li>
+                    <li>Verify <code>chapter6.txt</code> prefetch</li>
+                    <li>Switch to Japanese tab</li>
+                    <li>Verify prefetch changes to <code>chapter6_ja.txt</code></li>
+                    <li>Switch back to Vietnamese tab</li>
+                    <li>Verify prefetch changes back to <code>chapter6.txt</code></li>
+                </ol>
+            </div>
+            <button onclick="openTestChapter(5, false)">📖 Open Chapter 5 for Tab Test</button>
+            <div class="checklist-item">
+                <input type="checkbox" id="tab1">
+                <label for="tab1">Prefetch correctly updates when switching tabs</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>📊 Network Tab Analysis</h2>
+        <div class="instruction">
+            <h3>What to Look For in DevTools:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>What to Check</th>
+                        <th>Expected Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Name</strong></td>
+                        <td>File being loaded</td>
+                        <td><code>chapter{N}.txt</code> or <code>chapter{N}_ja.txt</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Type</strong></td>
+                        <td>Request type</td>
+                        <td><code>fetch</code> or <code>prefetch</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Initiator</strong></td>
+                        <td>What triggered the request</td>
+                        <td><code>index.html</code> or <code>prefetch</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Size</strong></td>
+                        <td>File size or cache status</td>
+                        <td>First load: file size (e.g., 15.2 KB)<br>From cache: <code>(prefetch cache)</code> or disk cache</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Time</strong></td>
+                        <td>Load duration</td>
+                        <td>From cache: 0-50ms<br>Network: 100-500ms (depends on connection)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Priority</strong></td>
+                        <td>Request priority</td>
+                        <td>Prefetch: <code>Lowest</code><br>Actual load: <code>High</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>🎯 Performance Metrics Summary</h2>
+        <button onclick="calculatePassRate()">✅ Calculate Test Pass Rate</button>
+        <button class="secondary" onclick="resetAll()">🔄 Reset All Tests</button>
+        <button class="secondary" onclick="printReport()">📄 Generate Report</button>
+
+        <div id="summary" style="margin-top: 20px; font-size: 20px; font-weight: bold;"></div>
+        <div id="report" style="margin-top: 15px; display: none;">
+            <h3>Test Report</h3>
+            <div id="reportContent" style="background: #f9f9f9; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap;"></div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>✅ Success Criteria</h2>
+        <div class="success">
+            <strong>All tests must pass:</strong>
+            <ul>
+                <li>✓ Prefetch requests appear in Network tab for chapters 1-19</li>
+                <li>✓ Next chapter loads significantly faster (from cache)</li>
+                <li>✓ Chapter 20 does NOT prefetch chapter 21</li>
+                <li>✓ Japanese prefetch works with _ja.txt files</li>
+                <li>✓ Tab switching updates prefetch correctly</li>
+                <li>✓ No console errors</li>
+                <li>✓ Perceived performance improvement is noticeable</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function openTestChapter(chapterNum, switchToJapanese) {
+            const url = `./index.html#/chapter/${chapterNum}`;
+            const win = window.open(url, '_blank');
+
+            setTimeout(() => {
+                let instructions = `Chapter ${chapterNum} opened in new tab!\n\n`;
+
+                if (switchToJapanese) {
+                    instructions += `IMPORTANT: Switch to Japanese tab (日本語)\n\n`;
+                }
+
+                instructions += `Instructions:\n`;
+                instructions += `1. Open DevTools (F12)\n`;
+                instructions += `2. Go to Network tab\n`;
+                instructions += `3. Look for prefetch request:\n`;
+
+                if (chapterNum < 20) {
+                    const nextChapter = chapterNum + 1;
+                    const fileName = switchToJapanese ?
+                        `chapter${nextChapter}_ja.txt` :
+                        `chapter${nextChapter}.txt`;
+                    instructions += `   → ${fileName}\n\n`;
+                    instructions += `4. Click "Next →" button\n`;
+                    instructions += `5. Verify chapter ${nextChapter} loads from cache (fast)\n`;
+                } else {
+                    instructions += `   → NO prefetch (last chapter)\n`;
+                }
+
+                instructions += `\nConsole command:\n`;
+                instructions += `document.querySelector('link[rel="prefetch"]')?.href`;
+
+                alert(instructions);
+            }, 500);
+        }
+
+        function calculatePassRate() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = checkboxes.length;
+            let passed = 0;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) passed++;
+            });
+
+            const percentage = Math.round((passed / total) * 100);
+            const summaryDiv = document.getElementById('summary');
+
+            if (percentage === 100) {
+                summaryDiv.innerHTML = `<span style="color: #4caf50;">🎉 All tests passed! (${passed}/${total}) - Prefetch is working correctly!</span>`;
+            } else if (percentage >= 80) {
+                summaryDiv.innerHTML = `<span style="color: #ff9800;">⚠️ Mostly passed: ${passed}/${total} (${percentage}%) - Review failed tests</span>`;
+            } else {
+                summaryDiv.innerHTML = `<span style="color: #f44336;">❌ Some tests failed: ${passed}/${total} (${percentage}%) - Needs debugging</span>`;
+            }
+
+            return { total, passed, percentage };
+        }
+
+        function resetAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('summary').innerHTML = '';
+            document.getElementById('report').style.display = 'none';
+        }
+
+        function printReport() {
+            const results = calculatePassRate();
+            const reportDiv = document.getElementById('report');
+            const reportContent = document.getElementById('reportContent');
+
+            const timestamp = new Date().toLocaleString();
+
+            let report = `PREFETCH PERFORMANCE VERIFICATION REPORT\n`;
+            report += `=========================================\n\n`;
+            report += `Date: ${timestamp}\n`;
+            report += `Test Results: ${results.passed}/${results.total} (${results.percentage}%)\n`;
+            report += `Status: ${results.percentage === 100 ? 'PASS' : 'FAIL'}\n\n`;
+
+            report += `Test Categories:\n`;
+            report += `  - Vietnamese Chapters: ${document.querySelectorAll('[id^="vn"]:checked').length}/4\n`;
+            report += `  - Japanese Chapters: ${document.querySelectorAll('[id^="ja"]:checked').length}/3\n`;
+            report += `  - Tab Switching: ${document.querySelectorAll('[id^="tab"]:checked').length}/1\n\n`;
+
+            report += `Recommendations:\n`;
+            if (results.percentage === 100) {
+                report += `  ✓ All tests passed. Prefetch implementation is working correctly.\n`;
+                report += `  ✓ Performance improvement verified.\n`;
+                report += `  ✓ Ready for production deployment.\n`;
+            } else {
+                report += `  ⚠ Review failed test cases.\n`;
+                report += `  ⚠ Check browser console for errors.\n`;
+                report += `  ⚠ Verify network conditions allow prefetch.\n`;
+            }
+
+            reportContent.textContent = report;
+            reportDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
