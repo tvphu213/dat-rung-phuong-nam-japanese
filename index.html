@@ -690,6 +690,25 @@
             }
         }
 
+        // Show/hide chapters - display only the specified chapter
+        function displaySingleChapter(chapterNum, isJapanese) {
+            const activeTab = document.querySelector('.tab-content.active');
+            const chapters = activeTab.querySelectorAll('.chapter');
+
+            // Hide all chapters in the active tab
+            chapters.forEach(chapter => {
+                chapter.style.display = 'none';
+            });
+
+            // Show only the specified chapter
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const targetChapter = document.getElementById(chapterId);
+
+            if (targetChapter) {
+                targetChapter.style.display = 'block';
+            }
+        }
+
         // URL parsing and validation functions
         function getChapterFromURL() {
             const hash = window.location.hash;
@@ -735,6 +754,7 @@
 
         // Auto-load Chapter 1 on page load
         document.addEventListener('DOMContentLoaded', function () {
+            displaySingleChapter(1, false);
             loadChapter(1, false);
         });
     </script>
