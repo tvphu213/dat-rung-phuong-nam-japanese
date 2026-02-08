@@ -590,6 +590,32 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Parse text content and create paragraph structure
+        function parseTextContent(text) {
+            const lines = text.trim().split('\n');
+            const title = lines[0];
+            const paragraphs = [];
+
+            let currentParagraph = '';
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.trim() === '') {
+                    if (currentParagraph.trim()) {
+                        paragraphs.push(currentParagraph.trim());
+                        currentParagraph = '';
+                    }
+                } else {
+                    currentParagraph += line;
+                }
+            }
+
+            if (currentParagraph.trim()) {
+                paragraphs.push(currentParagraph.trim());
+            }
+
+            return { title, paragraphs };
+        }
+
         // Show/hide back-to-top button and update reading progress
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
