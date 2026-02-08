@@ -616,6 +616,65 @@
             return { title, paragraphs };
         }
 
+        // Load chapter content dynamically from .txt files
+        async function loadChapter(chapterNum, isJapanese) {
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const chapterElement = document.getElementById(chapterId);
+
+            if (!chapterElement) {
+                return;
+            }
+
+            // Check if already loaded
+            if (chapterElement.dataset.loaded === 'true') {
+                return;
+            }
+
+            const contentElement = chapterElement.querySelector('.chapter-content');
+
+            // Show loading indicator
+            contentElement.innerHTML = '<p style="text-align: center; color: var(--text-light); font-style: italic;">Loading...</p>';
+
+            try {
+                // Build file path
+                const fileName = isJapanese ? `chapter${chapterNum}_ja.txt` : `chapter${chapterNum}.txt`;
+                const filePath = isJapanese ? `./chapters/ja/${fileName}` : `./chapters/vi/${fileName}`;
+
+                // Fetch chapter content
+                const response = await fetch(filePath);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load chapter: ${response.status} ${response.statusText}`);
+                }
+
+                const text = await response.text();
+                const { paragraphs } = parseTextContent(text);
+
+                // Populate DOM with paragraphs
+                contentElement.innerHTML = '';
+                paragraphs.forEach(paragraph => {
+                    const p = document.createElement('p');
+                    p.textContent = paragraph;
+                    contentElement.appendChild(p);
+                });
+
+                // Mark as loaded
+                chapterElement.dataset.loaded = 'true';
+
+            } catch (error) {
+                // Show error message with retry button
+                contentElement.innerHTML = `
+                    <p style="text-align: center; color: #d32f2f; margin-bottom: 1rem;">Failed to load chapter. Please try again.</p>
+                    <p style="text-align: center;">
+                        <button onclick="loadChapter(${chapterNum}, ${isJapanese})"
+                                style="padding: 0.5rem 1rem; background: var(--forest-green); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">
+                            Retry
+                        </button>
+                    </p>
+                `;
+            }
+        }
+
         // Show/hide back-to-top button and update reading progress
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
