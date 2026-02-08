@@ -635,13 +635,19 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
             scrollToTop();
         }
 
-        function scrollToChapter(chapterNum) {
+        async function scrollToChapter(chapterNum) {
             const activeTab = document.querySelector('.tab-content.active');
             const isJapanese = activeTab.id === 'japanese-content';
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
             const chapter = document.getElementById(chapterId);
 
             if (chapter) {
+                // Load chapter content before scrolling (if not already loaded)
+                if (chapterNum > 1 && chapter.dataset.loaded !== 'true') {
+                    await loadChapter(chapterNum, isJapanese);
+                }
+
+                // Scroll to chapter after loading
                 chapter.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
