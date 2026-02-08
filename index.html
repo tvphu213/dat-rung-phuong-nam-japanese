@@ -697,7 +697,7 @@
     </div>
 
     <script>
-        function switchTab(tab) {
+        async function switchTab(tab) {
             const vietnameseContent = document.getElementById('vietnamese-content');
             const japaneseContent = document.getElementById('japanese-content');
             const tabButtons = document.querySelectorAll('.tab-button');
@@ -710,13 +710,23 @@
                 japaneseContent.classList.remove('active');
                 tabButtons[0].classList.add('active');
                 tabButtons[1].classList.remove('active');
+
+                // Load and display current chapter in Vietnamese
+                await loadChapter(currentChapter, false);
+                displaySingleChapter(currentChapter, false);
                 updateDropdownSelection(currentChapter, false);
+                updateNavigationState(currentChapter);
             } else {
                 vietnameseContent.classList.remove('active');
                 japaneseContent.classList.add('active');
                 tabButtons[0].classList.remove('active');
                 tabButtons[1].classList.add('active');
+
+                // Load and display current chapter in Japanese
+                await loadChapter(currentChapter, true);
+                displaySingleChapter(currentChapter, true);
                 updateDropdownSelection(currentChapter, true);
+                updateNavigationState(currentChapter);
             }
 
             scrollToTop();
