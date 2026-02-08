@@ -117,6 +117,43 @@
             }
         }
 
+        .toc {
+            background: var(--sand-beige);
+            padding: 2rem;
+            border-bottom: 2px solid var(--earth-brown);
+        }
+
+        .toc h2 {
+            color: var(--forest-green);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--light-green);
+            padding-bottom: 0.5rem;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .toc-item {
+            background: white;
+            padding: 0.8rem 1rem;
+            border-left: 4px solid var(--light-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .toc-item:hover {
+            background: var(--light-green);
+            color: white;
+            transform: translateX(5px);
+            border-left-color: var(--accent-gold);
+        }
+
         .chapter {
             padding: 3rem 2rem;
             max-width: 800px;
@@ -197,6 +234,10 @@
             .chapter-content {
                 font-size: 1rem;
             }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
@@ -215,148 +256,56 @@
             }
         }
 
+        /* Loading spinner styles */
         .loading-spinner {
-            text-align: center;
-            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            min-height: 200px;
         }
 
         .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
             border: 4px solid var(--sand-beige);
-            border-top-color: var(--forest-green);
+            border-top: 4px solid var(--forest-green);
             border-radius: 50%;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .loading-text {
             margin-top: 1rem;
             color: var(--text-light);
+            font-size: 1rem;
             font-style: italic;
         }
 
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            padding: 2rem;
-            background: var(--sand-beige);
-            border-top: 2px solid var(--earth-brown);
-            flex-wrap: wrap;
-        }
-
-        .pagination-btn {
-            padding: 0.8rem 1.5rem;
-            background: var(--earth-brown);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        /* Error message styles */
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 1.5rem;
+            border-left: 4px solid #d32f2f;
             border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: var(--light-green);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .pagination-btn:active:not(:disabled) {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .pagination-btn:disabled {
-            background: #ccc;
-            color: #888;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .chapter-selector {
-            padding: 0.8rem 1rem;
-            background: white;
-            color: var(--text-dark);
-            border: 2px solid var(--earth-brown);
-            cursor: pointer;
+            margin: 2rem 0;
             font-size: 1rem;
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            min-width: 200px;
         }
 
-        .chapter-selector:hover {
-            border-color: var(--light-green);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .chapter-selector:focus {
-            outline: none;
-            border-color: var(--forest-green);
-            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .pagination-controls {
-                padding: 1.5rem 1rem;
-                gap: 0.8rem;
-            }
-
-            .pagination-btn {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.95rem;
-                min-width: 100px;
-            }
-
-            .chapter-selector {
-                padding: 0.7rem 0.8rem;
-                font-size: 0.95rem;
-                min-width: 180px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .pagination-controls {
-                padding: 1rem 0.5rem;
-                gap: 0.5rem;
-            }
-
-            .pagination-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-                min-width: 80px;
-            }
-
-            .chapter-selector {
-                padding: 0.6rem 0.7rem;
-                font-size: 0.9rem;
-                min-width: 100%;
-            }
+        .error-message strong {
+            display: block;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 
 <body>
-    <div class="reading-progress">
-        <div class="reading-progress-bar"></div>
-    </div>
-
     <div class="container">
         <header>
             <h1>Đất Rừng Phương Nam</h1>
@@ -370,15 +319,363 @@
 
         <!-- Vietnamese Content -->
         <div id="vietnamese-content" class="tab-content active">
-            <div class="pagination-controls">
-                <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
-                <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
-                <button class="pagination-btn next-btn" onclick="navigateNext()">Next →</button>
+            <div class="toc">
+                <h2>📚 Mục lục</h2>
+                <div class="toc-grid">
+                    <div class="toc-item" onclick="scrollToChapter(1)">Chương 1: Xóm chợ nhỏ một vùng quê xa lạ</div>
+                    <div class="toc-item" onclick="scrollToChapter(2)">Chương 2: Trong tửu quán</div>
+                    <div class="toc-item" onclick="scrollToChapter(3)">Chương 3: Ông lão bán rắn</div>
+                    <div class="toc-item" onclick="scrollToChapter(4)">Chương 4: Đêm kinh khủng</div>
+                    <div class="toc-item" onclick="scrollToChapter(5)">Chương 5: Ôn lại ngày cũ</div>
+                    <div class="toc-item" onclick="scrollToChapter(6)">Chương 6: Bước đầu cuộc sống lưu lạc</div>
+                    <div class="toc-item" onclick="scrollToChapter(7)">Chương 7: Gia đình bố nuôi tôi</div>
+                    <div class="toc-item" onclick="scrollToChapter(8)">Chương 8: Đi câu rắn</div>
+                    <div class="toc-item" onclick="scrollToChapter(9)">Chương 9: Đi lấy mật</div>
+                    <div class="toc-item" onclick="scrollToChapter(10)">Chương 10: Trong lều người đàn ông cô độc giữa rừng</div>
+                    <div class="toc-item" onclick="scrollToChapter(11)">Chương 11: Rùng cháy</div>
+                    <div class="toc-item" onclick="scrollToChapter(12)">Chương 12: Chạm trán với hổ</div>
+                    <div class="toc-item" onclick="scrollToChapter(13)">Chương 13: Cái Chết Của Võ Tòng</div>
+                    <div class="toc-item" onclick="scrollToChapter(14)">Chương 14: Mũi tên thù</div>
+                    <div class="toc-item" onclick="scrollToChapter(15)">Chương 15: Phường săn cá sấu</div>
+                    <div class="toc-item" onclick="scrollToChapter(16)">“Chương 16: Qua sróc Miên</div>
+                    <div class="toc-item" onclick="scrollToChapter(17)">Chương 17: Sân chim</div>
+                    <div class="toc-item" onclick="scrollToChapter(18)">Chương 18: Rừng đước Cà Mau</div>
+                    <div class="toc-item" onclick="scrollToChapter(19)">Chương 19: Du kích trong rừng</div>
+                    <div class="toc-item" onclick="scrollToChapter(20)">Chương 20: Lên đường chiến đấu</div>
+                </div>
             </div>
 
-            <div class="chapter" id="chapter-1" data-chapter-num="1" data-loaded="false">
+            <div class="chapter" id="chapter-1">
                 <h2 class="chapter-title">Chương 1: Xóm chợ nhỏ một vùng quê xa lạ</h2>
-                <div class="chapter-content"></div>
+                <div class="chapter-content">Có lẽ từ hôm bước lên xóm chợ này, mình đã bắt đầu cuộc sống lưu lạc rồi chăng Những đêm giật mình thức giấc nằm nghe tiếng gió rít thê lương từ các cánh đồng xa mông quạnh và lắng nghe tiếng nước chảy ào ào dưới chân cầu nước(Bậc thang bắc ra sông để giặt giũ hay lấy nước) bắc ra con kênh thẳng tắp chạy dài vô tận trước ngôi chợ này, tôi vẫn thường vơ vẩn nghĩ như vậy
+
+Tôi lạc tới xóm chợ này, tính ra đã có hơn nửa tháng.
+
+Một buổi tối, đoàn thuyền vận tải quân lương của Ủy ban kháng chiến Nam Bộ đỗ lại đây. Anh học sinh trường côle người trong ban tiếp tế đã cho tôi theo thuyền từ Hậu Giang đến đây bảo tôi: “Chỉ ghé lại độ nửa giờ cho các chú lên chợ mua thức ăn. Có muốn lên bờ không?.
+
+Tôi lắc đầu. Anh bèn vỗ vai tôi cười lớn: “Vậy thì tốt quá, ngồi lên mui ngó lên bờ chơi cũng được. Trông chừng đồ đạc em nhé!” Anh lần theo cây đòn dài bắc sang một chiếc thuyền khác, và lẹ làng như con sóc, co người trèo qua be mấy chiếc tam bản, mấy chiếc xuồng nhỏ của những người đi chợ đậu ken dọc theo bến rồi nhảy phóc lên bờ.
+
+– Đừng đi đâu nhé Uống cà phê xong anh sẽ xuống cho chú mày cái bánh! – anh xốc khẩu súng mô-de đeo bên hông, vẫy vẫy tôi và rướn hai chân, cố nói thật to để cho tôi nghe thấy.
+
+– Rồi! Nghe rồi… Anh cứ đi đi! – tôi bắc tay lên mồm đáp lại.
+
+Tôi ngồi đong đưa hai chân trên mui chiếc thuyền chở gạo ngóng lên chợ. Đèn măng-sông trong các hiệu buôn, các tiệm ăn của người Hoa kiều thắp lên sáng rực. Chỗ khoảng sân rộng, những người đàn bà nông dân mặc quần áo bà ba đen, khăn rằn đen vắt chéo qua vai ngồi xếp từng dãy dài sau những chiếc cần xé to tướng, những chiếc thúng đựng đầy ắp không trông rõ và không biết đó là thứ gì mà họ mang ra chợ bán. Mỗi người bán hàng đều thắp một ngọn đèn con ở chỗ mình ngồi. Và những người đi chợ, cũng có nhiều người cầm theo trên tay một ngọn đèn.
+
+Đèn người mua, đèn người bán cứ như sao sa.
+
+Từ trong đám người ồn ào và những ánh lửa đèn luôn luôn cử động ở tít chỗ cuối chợ, bỗng nổi lên bốn đầu ngọn đuốc cháy đỏ rực cùng với tiếng trống, tiếng thanh la khua rung dồn dập.
+
+– Hát Sơn Đông, chúng mày ơi?
+
+– Lại coi con bé nhào vòng lửa đi! Mau lên, chúng mày ơi!
+
+Bọn con nít từ khắp các ngõ ngách, từ trong các chỗ tối, từ dưới thuyền dưới xuồng chèo lên, ba chân bốn cẳng reo hò chạy về chỗ đám hát rong. Tự nhiên hai chân tôi cũng ngứa ngáy muốn tuôn theo. Đã bắt đầu nghe tiếng loa của người Khách mãi võ giới thiệu các môn trình diễn, và tiếng vỗ tay hoan hô của đám người xem vây quanh.
+
+Tôi kiễng chân lên coi họ làm gì đằng ấy. Xa quá, chỉ thấy đầu người lô nhô và mỗi lúc lại nghe tiếng cười khoái trá dậy lên. lâu nay mình xem chán rồi. Còn lạ gì cái thứ trò ấy?” Tôi tự nhủ thầm như vậy và khinh khỉnh nhìn về đám người huyên náo để nén sự thôi thúc cứ dồn trống trong ngực.
+
+– Thằng An còn ngồi đấy không? – bác tài công già cầm xâu thịt và một mớ rau cải vừa bước lên đòn dài vừa hỏi, giọng ồm ồm.
+
+Cháu còn đây, bác ơi ! – tôi vội đáp, bụng hơi rạo rực.
+
+– Nè, mà mày muốn coi hát Sơn Đông không – bác lại hỏi.
+
+– Các anh bảo cháu ở đây coi chừng thuyền.
+
+Bác tài công vứt sâu thịt vào cái rổ, vặn lưng uốn xương sống nghe rắc rắc, hơi thở nặc nồng mùi rượu:
+
+Ê ! mày đã ăn thịt nai xào cải rổ chưa? Sáng mai tao cho mày ních một trận, phải biết nhá! – rồi bác cười lớn:
+
+Tao đã đi khắp ngọn nguồn sông lạch mà chưa thấy ai mập như con mẹ chủ quán này. Nó rót luôn cho tao năm ly rượu tấm bồng mắt thỏ mà không nhậu ra ngoài một giọt chớ
+
+– Bác có lên chợ uống cà phê không? – Tôi hỏi.
+
+– Tao mà cà phê cà pháo gì mậy? ờ, mà các chả đang làm cà phê trong cái quán chỗ đám hát Sơn Đông đó?
+
+Thôi, có tao ở đây rồi. Cho mày lên chợ chơi một lát. Nhớ đường trở xuống bến không Đừng có đi đâu xa , coi chừng lạc
+
+Trời ơi, một thằng bé từ lọt lòng mẹ đến giờ sống ở thành phố như tôi mà có thể lạc trong cái chợ nhỏ xứ quê này? Tôi cười thầm trong tối, từ trên mui gieo người nhảy độp xuống sạp thuyền.
+
+– Cười gì đó mậy, An? – bác chướng mắt hỏi tôi.
+
+– Không. Cháu có cười gì đâu
+
+– Bộ mày tưởng tao say hả? ê, tao còn thấy cái bông bần( một loại cây mọc ven mé sông còn gọi là thuỷ liễu ) trôi giữa kênh kia nhá ! . . . Chà, nước giật ròng rồi .
+
+Cháu lên đây, bác ạ!
+
+Không chờ nghe bác ừ, thoáng cái, tôi đã đặt chân tới bờ. Chao ôi Chợ gì mà lạ lùng thế này? Bộ Tây sắp đánh tới nơi, nên người ta đem vườn bách thú ra phát mãi hay sao! Một con ba ba to gần bằng cái nong, đặt lật ngửa, cứ ngọ nguậy bơi bơi bốn chân trước ông cụ già ngồi lim dim đôi mắt. Những con rùa vàng to gần bằng cái tô, đều tăm tắp như đổ ở cùng một khuôn ra, nằm rụt cổ trong mấy chiếc giỏ cần xé. Đây là một con nai người ta vừa xẻ thịt ra bán, cái thủ còn nguyên chưa lột da bày giữa đống thịt đỏ hỏn trên một tấm lá chầm. Cua biển cũng có, ếch cũng có nghêu sò cũng có. Còn cá tôm thì nhiều lắm, đủ các loại tôm, không kể xiết. Tôi bước thêm mấy bước, qua những đống trái khóm chín vàng tỏa thơm mùi mật, thấy hai con trút nằm khoanh, vảy xếp lại như những đồng hào lấp lánh. Có tiếng chim gì mổ nhau kêu quang quác trong chiếc lồng kẽm chỗ tối tối: ngọn đèn vừa bị cánh chim đánh nhau quạt tắt, và người chủ bán chưa kịp thắp lên. Một chú khỉ con cứ nhảy qua nhảy lại lia lịa, chờn vờn trèo lên đống bí ngô. Thấy tôi đi qua, nó nhe răng khẹc khẹc, ngó tôi rồi quay lại nhòm người chủ, dường như muốn bảo tôi hỏi giùm tại sao cái lão rậm râu kia không thả mối dây xích cổ ra để nó được tự do đi chơi như tôi . . . Đằng chỗ đám hát rong, một tràng pháo nổi lên vang dậy. Tôi chẳng còn tâm trí đâu mà nhìn ngó chung quanh nữa. Tôi lại ba chân bốn cẳng nhắm mắt nhắm mũi lao về phía tiếng ồn ào đang có một sức cuốn hút không cưỡng được.
+
+“Mình chỉ coi một chút thôi!” Tôi nghĩ bụng và đưa mắt nhìn vào trong ngôi quán cà phê nhỏ núp dưới tán cây bã đậu chôm chôm những gai. Cái lưng gù gù anh học sinh trường côle lấp ló qua vai những người dân quân tự vệ đội nón bàng rộng vành thả trễ sau gáy. Tôi muốn vào báo cho anh biết tới đã lên đây, nhưng bụng phân vân:
+
+,Lỡ ảnh bảo xuống thuyền thì sao?.. . ừ, mà mình chỉ cần coi qua một chút thôi mà?”
+
+Chen đâu mà chen dữ vậy hả? – một thằng bé lùn lùn, béo ục ịch, trợn mắt hích khuỷu tay vào hông tôi.
+
+– Cho tao coi một chút mà!
+
+Nghe tôi nói bằng một giọng nhường nhịn, thằng bé tức thời nép người qua để cho tôi lách vào, rồi nó nhe răng cười làm như tôi với nó đã quen từ hồi nào.
+
+– Mày mới tới à? Hồi nãy vừa diễn trò hai con khỉ kéo xe mê lắm? ừ, mình mới tới! – tôi đáp cho có đáp, không còn chú ý nghe nó kể những gì bên tai nữa.
+
+Người khách mãi võ mặc quần áo chẽn màu đen đã bán qua một lượt thuốc cao, bắt đầu giới thiệu tiết mục “Em bé mười tuổi nhào qua vòng lửa
+
+– Trò này đêm qua nó diễn rồi. Không thể tả được mà!
+
+– thằng bé lùn lùn béo ục ịch lại rỉ tai tôi, giọng đầy tự hào về cái chuyện nó đã được xem trước tôi.
+
+Một em bé vận bộ quần áo bằng xa tanh màu đỏ, tóc tết quả đào, mang đôi hài vải đen bước ra, cúi chào khán giả Chiếc vòng sắt quấn giẻ tẩm dầu lồng giữa một khung gỗ hình chữ nhật, dựng đứng cỡ ngang tầm mắt tôi, bày giữa hiện trường. Dứt loạt vỗ tay chung quanh, người Khách già cầm ngọn đuốc châm vào chiếc vòng quấn dẻ. Tức thời một vầng lửa hình trong như chiếc bánh xe lửa của Na-tra(Một nhân vật trong truyện “phong thần” trung quốc) phực cháy vù vù. Em bé lại nghiêng đầu chào mọi người rồi dún chân một cái, chạy tới ba bước gieo mình như một con thoi bay qua vòng lửa.
+
+Mắt tôi hoa lên, chỉ còn thấy cái bóng đỏ lao qua lao lại xuyên ngang vầng lửa, và hai tai tôi ù đi vì tiếng reo hò, tiếng vỗ tay vang dậy-
+
+– Đêm qua, nó nhào sáu lần mà bữa nay nó tăng lên tới tám lần! Mày thấy ghê chưa? – thằng bé lùn lùn béo ục ịch hích tôi, vênh mặt nói.
+
+Trong lúc người Khách cầm mấy chai rượu thuốc đi vòng quanh chào hàng thì em bé vừa đứng thở vừa đưa hai bàn tay nhỏ phủi phủi những sợi tóc cháy trước trán.
+
+Dáng như đêm nay số thuốc bán được ít ỏi quá. Người Khách mặt buồn buồn, đặt mấy chai rượu thuốc lên cái rương lớn màu đen, cố làm ra vẻ tươi tỉnh:
+
+– ông bà cô bác xem xong trò này, rồi hẵng mua giùm sau cũng được. Hầy? Tả lồ lên(đánh thanh la lên)”
+
+Tiếng trống, tiếng thanh la lại khua rung dồn dập.
+
+Ông ta cầm một nắm dao con sáng loáng tung lên bắt từng chiếc một, rồi lần lượt cắm tất cả mười hai con dao ấy vào những khe hở đục trong cái vòng sắt còn dang rừng rục lửa. Những mũi dao nhọn hình lá trúc đào lấp lánh ánh thép trắng xanh tua tủa chĩa ngược vào trong, càng làm thu hẹp cái khoảng tròn ban nãy vừa đủ một thân mình người chui qua. Người Khách xiếc nhìn mấy người đánh trống đánh thanh la, ra hiệu ngừng tay. ông ta nhường mắt hét lên một tiếng, rùng mình thu người lại và lập tức dún chân bay qua giữa những mũi dao tua tủa. Tôi nhắm mắt lại. Trời ơi! Chỉ nhích ra một phân, bất cứ ở phía nào thì những mũi dao sắc nhọn như gươm kia cũng đâm xóc lút vào da thịt. ông ta lao đi lao lại ba lần như vậy mà trông sắc mặt và hơi thở không chút biến đổi.
+
+– Người lớn làm không hay. Em bé làm mới hay? – người Khách vung tay giới thiệu.
+
+Em bé gái bước ra, nghiêng đầu chào mọi người. Hai bàn chân đi đôi hài vái đen nhỏ xíu khơi động giẫm lên giẫm xuống một chỗ trên mặt đất lởm chởm những hòn cuội Tôi hồi hộp qua. Đôi môi em bé run run. Rõ ràng là nó đang cố trấn tĩnh trước phút biểu diễn cái trò vô vùng nguy hiểm này.
+
+Có ba ở đây, con? – người Khách nói bằng giọng khuyến khích vui vẻ, nhưng cặp mắt ông ta trông nghiêm nghị đáng sợ.
+
+Em bé tức thời hét lên một tiếng như bố, dún chân bay xuyên qua giữa vòng dao rực cháy. Chung quang im phăng phắc. Mọi người không kịp vỗ tay. Có lẽ vì sự thán phục cùng với nỗi lo sợ thay cho em bé cùng một lúc ập vào làm choáng ngợp mọi trái tim người. Em bé lao qua vòng dao lần thứ nhất, rất dễ dàng. Em lại mím môi lao qua lần thứ hai . Đến lần thứ ba, thì một tiếng thét kinh hoàng của những người xem nổi lên chung quanh tai tôi.
+
+Em bé đã ngã bổ xuống bàn chân phải mắc vào một mũi dao.
+
+Người xem chạy ùa vào. ông Khách già ôm ngang lưng con gỡ chiếc hài đen ra khỏi mũi dao. Một dòng máu đỏ từ trong vết thương bàn chân em bé tuôn ra như suối .
+
+Không hề gì mà! Dán một lá thuốc cao, khỏi ngay thôi? – ông Khách vùa nói vừa rắc một ít thuốc cầm máu màu đen để hàn miệng vết thương, và trao đứa con gái cho một bà xẩm vác đưa xuống chiếc thuyền đậu trong một con kênh gần đấy.
+
+Bọn trẻ nhỏ ùn ùn chen lấn chạy theo coi. Mặc dầu đám hát vẫn tiếp tục biểu diễn, nhưng tôi không còn lòng đã nào xem nữa. Tôi cũng chạy theo đám trẻ, lần xuống mé sông đứng ngó vào thuyền.
+
+Em bé ngồi tựa lưng vào mui, đôi mắt to đen láy nhìn xuống vết thương trên mu bàn chân đã được bó một lá thuốc cao. Không thấy máu chảy nữa. Nhưng bàn chân cứ run run, lâu lâu lại giật một cái, khiến em nhắm mắt lại Bà xẩm cầm ngọn đèn soi vào chân con, tròng mắt đỏ hoe.
+
+– Con có đau lắm không, con?
+
+Em bé nhắm nghiền mắt, hai tay bóp chặt trên ống chân, lắc lắc đầu. Một giọt nhóc mắt người mẹ rơi xuống bàn chân nhỏ của đứa con đau. Em bé mở choàng mắt ra, hốt hoảng nhìn mẹ, như vừa bị một giọt nước sôi rơi trúng vào chân.
+
+– Ơ không có làm sao đâu, má à? Buốt buốt một tí thôi!
+
+Vừa nói, cô bé vừa quờ tay ôm ngang lưng mẹ và cố nhoẻn cười cho mẹ yên lòng. Nhưng sau đó một chốc, em lại nhắm mắt lại. Mấy giọt mồ hôi rịn rịn ra trên vầng trán nhỏ. Tôi biết chắc chắn rằng em bé đau lắm. Tôi không dám đứng nhìn nữa, bèn trở lên chợ.
+
+Bấy giờ đám hát cũng vừa tan. Tôi sực nhớ ra là mình đã đi lâu quá. Tôi liền chạy vào quán cà-phê. Không thấy anh học sinh côle đâu. Tôi nhằm hướng đầu ngọn cây bàng khô, chạy một mạch về . Đoàn thuyền vận tải quân lương không còn chiếc nào đậu ở đó nữa. Tôi chạy dọc theo bến chợ một quãng, hi vọng họ vừa rời đi, mình còn có thể đuổi theo kịp.
+
+Trời tối quá. Lửa đèn trên sông dần dần thưa thớt. Chợ cũng đã tan rồi. Tôi trèo lên một đống gạch, đứng ngóng theo làn nước lấp loáng ánh sao xuôi xuôi trên dòng kênh không biết chảy về đâu. Một người đàn bà quảy đôi thùng xuống bến lấy nước, đứng lại nhìn tôi hồi lâu rồi hỏi:
+
+Có Phải mày ở trong đoàn thuyền vận tải không?
+
+– Dạ phải! – tôi vội đáp, bụng hơi mừng – Họ đi đâu rồi dì?
+
+– Trời ơi? Mày đi đâu mà họ tìm mày khắp cả chợ? Họ đi rồi. Đi từ tám hoánh nào rồi ! Nhổ sào từ hồi nước mới ròng. Và người đàn bà chép miệng: – Chà, chừng như họ được lệnh đi ngay hay sao ấy. Gấp lắm thì phải!
+
+– Dì có nghe họ nói đi đâu không – tôi hỏi lại.
+
+– Chuyện quân sự mà, biết sao lọt! Thế mày cũng không biết à? Họ không nói với mày à?
+
+– Không , dì ạ!
+
+– Mày có ba má, anh em gì trên thuyền không?
+
+– Không. Cháu đi quá giang thôi. Người đàn bà chành môi ra dài giọng:
+Thảo nào? … Người ta có việc của người ta chứ. Ai bảo cứ ham chơi, đi những đâu? .
+
+Người đàn bà không nói gì nữa, lẳng lặng xuống sông gánh nước lên chợ. Tự nhiên tôi thấy trong lòng mình rưng muốn khóc…
+
+Ban ngày tôi thẩn tha đi dọc theo bến, mong có gặp người nào quen trong đoàn thuyền vận tải quân lương trở lại đây không. Ban đêm tôi, tôi vào ngủ trong chợ, chui dưới gầm một thớt bán thịt lợn của người Hoa kiều.
+
+Những người đàn bà trong chợ gọi tôi là thằng bé tản cư. Nghe đâu hồi tháng trước, chợ này chỉ họp buổi sáng. Hơn tháng nay, chợ nhóm suốt ngày, có đêm mãi chín mười giờ khuya mới tan. Người tản cư ở các vùng trên đổ xuống ùn ùn như nước. Mặt nước dòng kênh không mấy lúc ngớt tiếng khua động mái chèo. Cái chợ con nằm trên ngã ba kênh của xứ làng quê hẻo lánh này trở nên đông vui nhộn nhịp như một trấn nhỏ. Người từ Sài Gòn chạy xuống tới đây cũng có. Người vùng Tiền Giang, Hậu Giang cũng có. Nhiều con mụ đàn bà mặc áo lụa trắng rô-dê(tiếng pháp có nghĩa là thêu ), che dù đầm, núng na núng nính rén bước đi lên chợ, mắt cứ ngó xuống chân dép xăng-đan, sợ bùn đất vấy gấu quần. Tiền bạc đựng nứt ví, nhưng mua gì cũng chê ỏng chê eo, trả giá rẻ mạt. Tôi chỉ nghe họ than phiền với nhau rằng: Cánh mình dở quá, không chặn nổi Tây”, rằng “chạy vào đây không có nước đá uống, không có nước ngọt tắm”. Thấy tôi lảng vảng đến gần chỗ thuyền họ, họ nhìn chòng chọc vào tôi, bộ như muốn ăn thịt: ê đi đi, thằng nhỏ. Mò mẫm toan an cắp hả?” Tôi ức đến muốn khóc. Có ai quen, gặp tôi bây giờ cũng không nhận ra tôi nữa đâu. Ngồi bó gối trên cầu nhìn xuống nước, chính tôi cũng khó nhận ra mình trong cái hình thù quái dị này. Tóc tôi mọc dài gần phủ gáy, hai quầng mắt hõm sâu, cổ gầy nhom như cổ cò ma. Chiếc áo vét tông bằng ka ki trắng của anh học sinh côle cho tôi, giờ đây đã biến thành màu cháo lòng, vạt áo phủ xuống tận gối, cứ kêu loạt xoạt theo mỗi bước đi.
+
+Còn chiếc quần đùi bằng vải len của tôi thì bạc phếch ra, hai ống rách te tua như bị cá chốt rỉa.
+
+Ai nhờ việc gì, tôi cũng giúp. Mấy thím bán cá nhờ tôi khiêng thúng mủng, xách nước cho họ thay nước rộng cá.
+
+Em bé? Vác cho qua ( tiếng xưng tôi thân mật của người có tuổi ) bó mía đi!
+
+– Em bé? Đội thúng tôm lên chợ giúp dì đi.
+
+Nhỏ? Nhỏ! Chạy xuống mé kênh cắm lại cây sào của dì sắp trôi kia!
+
+Kẻ cho tôi nắm xôi, người cho tôi gói bắp. Không ai biết tôi từ đâu trôi dạt tới .
+
+Ngày nào tôi cũng tạt qua trước ngôi quán rượu một lần. Biết đâu bác tài công già hôm nọ chẳng qua ngang mà ghé lại đây?
+
+Những ngày đầu mùa mưa năm 1946 cứ ì ạch nặng nề lê đi từng bước khó khăn như người đàn bà sắp ở cữ cứ trở dạ mãi mà vẫn chưa đẻ được. Ở cái vùng nước mặn miền tây Nam bộ này, người ta mong mưa như bọn trẻ con chúng tôi mong mẹ về chợ. Mưa có nước ngọt uống, có nước cầy bừa, nhưng điều quan trọng nhất trước mắt, là mưa có thể làm chậm bước của địch trong các cuộc tiến công, gây trở ngại cho chúng trên các nẻo đường hành quân vì trơn tuột, sình lầy.
+
+Trời càng sắp mưa thì càng oi bức khó chịu, ban ngày mặt trời đổ nắng chang chang, nóng như giội lửa. Chỉ khi đêm đến mới có đôi chút gió lao xao từ vùng vịnh Thái
+
+Lan thổi tới. Thường thường, đêm nào người trong chợ cũng xách chiếu ra ngồi dọc bờ kênh hóng mát, coi thuyền tản cư và thuyền chở Cộng hòa vệ binh( tổ chức chính quy của quân đội sau ngày nam bộ cướp chính quyền 1 trong 4 sư đoàn dân quân cách mạng nam bộ ) từ mạn trên trẩy xuống. Quán rượu của dì Tư Béo là nơi tụ họp của những người thức khuya nhất, có khi đến một hai giờ sáng hãy còn đỏ đèn và ran tiếng nói cười.
+
+Có lẽ từ hôm bước lên xóm chợ này, mình đã bắt đầu cuộc sống lưu lạc rồi chăng Những đêm giật mình thức giấc nằm nghe tiếng gió rít thê lương từ các cánh đồng xa mông quạnh và lắng nghe tiếng nước chảy ào ào dưới chân cầu nước(Bậc thang bắc ra sông để giặt giũ hay lấy nước) bắc ra con kênh thẳng tắp chạy dài vô tận trước ngôi chợ này, tôi vẫn thường vơ vẩn nghĩ như vậy
+
+Tôi lạc tới xóm chợ này, tính ra đã có hơn nửa tháng.
+
+Một buổi tối, đoàn thuyền vận tải quân lương của Ủy ban kháng chiến Nam Bộ đỗ lại đây. Anh học sinh trường côle người trong ban tiếp tế đã cho tôi theo thuyền từ Hậu Giang đến đây bảo tôi: “Chỉ ghé lại độ nửa giờ cho các chú lên chợ mua thức ăn. Có muốn lên bờ không?.
+
+Tôi lắc đầu. Anh bèn vỗ vai tôi cười lớn: “Vậy thì tốt quá, ngồi lên mui ngó lên bờ chơi cũng được. Trông chừng đồ đạc em nhé!” Anh lần theo cây đòn dài bắc sang một chiếc thuyền khác, và lẹ làng như con sóc, co người trèo qua be mấy chiếc tam bản, mấy chiếc xuồng nhỏ của những người đi chợ đậu ken dọc theo bến rồi nhảy phóc lên bờ.
+
+– Đừng đi đâu nhé Uống cà phê xong anh sẽ xuống cho chú mày cái bánh! – anh xốc khẩu súng mô-de đeo bên hông, vẫy vẫy tôi và rướn hai chân, cố nói thật to để cho tôi nghe thấy.
+
+– Rồi! Nghe rồi… Anh cứ đi đi! – tôi bắc tay lên mồm đáp lại.
+
+Tôi ngồi đong đưa hai chân trên mui chiếc thuyền chở gạo ngóng lên chợ. Đèn măng-sông trong các hiệu buôn, các tiệm ăn của người Hoa kiều thắp lên sáng rực. Chỗ khoảng sân rộng, những người đàn bà nông dân mặc quần áo bà ba đen, khăn rằn đen vắt chéo qua vai ngồi xếp từng dãy dài sau những chiếc cần xé to tướng, những chiếc thúng đựng đầy ắp không trông rõ và không biết đó là thứ gì mà họ mang ra chợ bán. Mỗi người bán hàng đều thắp một ngọn đèn con ở chỗ mình ngồi. Và những người đi chợ, cũng có nhiều người cầm theo trên tay một ngọn đèn.
+
+Đèn người mua, đèn người bán cứ như sao sa.
+
+Từ trong đám người ồn ào và những ánh lửa đèn luôn luôn cử động ở tít chỗ cuối chợ, bỗng nổi lên bốn đầu ngọn đuốc cháy đỏ rực cùng với tiếng trống, tiếng thanh la khua rung dồn dập.
+
+– Hát Sơn Đông, chúng mày ơi?
+
+– Lại coi con bé nhào vòng lửa đi! Mau lên, chúng mày ơi!
+
+Bọn con nít từ khắp các ngõ ngách, từ trong các chỗ tối, từ dưới thuyền dưới xuồng chèo lên, ba chân bốn cẳng reo hò chạy về chỗ đám hát rong. Tự nhiên hai chân tôi cũng ngứa ngáy muốn tuôn theo. Đã bắt đầu nghe tiếng loa của người Khách mãi võ giới thiệu các môn trình diễn, và tiếng vỗ tay hoan hô của đám người xem vây quanh.
+
+Tôi kiễng chân lên coi họ làm gì đằng ấy. Xa quá, chỉ thấy đầu người lô nhô và mỗi lúc lại nghe tiếng cười khoái trá dậy lên. lâu nay mình xem chán rồi. Còn lạ gì cái thứ trò ấy?” Tôi tự nhủ thầm như vậy và khinh khỉnh nhìn về đám người huyên náo để nén sự thôi thúc cứ dồn trống trong ngực.
+
+– Thằng An còn ngồi đấy không? – bác tài công già cầm xâu thịt và một mớ rau cải vừa bước lên đòn dài vừa hỏi, giọng ồm ồm.
+
+Cháu còn đây, bác ơi ! – tôi vội đáp, bụng hơi rạo rực.
+
+– Nè, mà mày muốn coi hát Sơn Đông không – bác lại hỏi.
+
+– Các anh bảo cháu ở đây coi chừng thuyền.
+
+Bác tài công vứt sâu thịt vào cái rổ, vặn lưng uốn xương sống nghe rắc rắc, hơi thở nặc nồng mùi rượu:
+
+Ê ! mày đã ăn thịt nai xào cải rổ chưa? Sáng mai tao cho mày ních một trận, phải biết nhá! – rồi bác cười lớn:
+
+Tao đã đi khắp ngọn nguồn sông lạch mà chưa thấy ai mập như con mẹ chủ quán này. Nó rót luôn cho tao năm ly rượu tấm bồng mắt thỏ mà không nhậu ra ngoài một giọt chớ
+
+– Bác có lên chợ uống cà phê không? – Tôi hỏi.
+
+– Tao mà cà phê cà pháo gì mậy? ờ, mà các chả đang làm cà phê trong cái quán chỗ đám hát Sơn Đông đó?
+
+Thôi, có tao ở đây rồi. Cho mày lên chợ chơi một lát. Nhớ đường trở xuống bến không Đừng có đi đâu xa , coi chừng lạc
+
+Trời ơi, một thằng bé từ lọt lòng mẹ đến giờ sống ở thành phố như tôi mà có thể lạc trong cái chợ nhỏ xứ quê này? Tôi cười thầm trong tối, từ trên mui gieo người nhảy độp xuống sạp thuyền.
+
+– Cười gì đó mậy, An? – bác chướng mắt hỏi tôi.
+
+– Không. Cháu có cười gì đâu
+
+– Bộ mày tưởng tao say hả? ê, tao còn thấy cái bông bần( một loại cây mọc ven mé sông còn gọi là thuỷ liễu ) trôi giữa kênh kia nhá ! . . . Chà, nước giật ròng rồi .
+
+Cháu lên đây, bác ạ!
+
+Không chờ nghe bác ừ, thoáng cái, tôi đã đặt chân tới bờ. Chao ôi Chợ gì mà lạ lùng thế này? Bộ Tây sắp đánh tới nơi, nên người ta đem vườn bách thú ra phát mãi hay sao! Một con ba ba to gần bằng cái nong, đặt lật ngửa, cứ ngọ nguậy bơi bơi bốn chân trước ông cụ già ngồi lim dim đôi mắt. Những con rùa vàng to gần bằng cái tô, đều tăm tắp như đổ ở cùng một khuôn ra, nằm rụt cổ trong mấy chiếc giỏ cần xé. Đây là một con nai người ta vừa xẻ thịt ra bán, cái thủ còn nguyên chưa lột da bày giữa đống thịt đỏ hỏn trên một tấm lá chầm. Cua biển cũng có, ếch cũng có nghêu sò cũng có. Còn cá tôm thì nhiều lắm, đủ các loại tôm, không kể xiết. Tôi bước thêm mấy bước, qua những đống trái khóm chín vàng tỏa thơm mùi mật, thấy hai con trút nằm khoanh, vảy xếp lại như những đồng hào lấp lánh. Có tiếng chim gì mổ nhau kêu quang quác trong chiếc lồng kẽm chỗ tối tối: ngọn đèn vừa bị cánh chim đánh nhau quạt tắt, và người chủ bán chưa kịp thắp lên. Một chú khỉ con cứ nhảy qua nhảy lại lia lịa, chờn vờn trèo lên đống bí ngô. Thấy tôi đi qua, nó nhe răng khẹc khẹc, ngó tôi rồi quay lại nhòm người chủ, dường như muốn bảo tôi hỏi giùm tại sao cái lão rậm râu kia không thả mối dây xích cổ ra để nó được tự do đi chơi như tôi . . . Đằng chỗ đám hát rong, một tràng pháo nổi lên vang dậy. Tôi chẳng còn tâm trí đâu mà nhìn ngó chung quanh nữa. Tôi lại ba chân bốn cẳng nhắm mắt nhắm mũi lao về phía tiếng ồn ào đang có một sức cuốn hút không cưỡng được.
+
+“Mình chỉ coi một chút thôi!” Tôi nghĩ bụng và đưa mắt nhìn vào trong ngôi quán cà phê nhỏ núp dưới tán cây bã đậu chôm chôm những gai. Cái lưng gù gù anh học sinh trường côle lấp ló qua vai những người dân quân tự vệ đội nón bàng rộng vành thả trễ sau gáy. Tôi muốn vào báo cho anh biết tới đã lên đây, nhưng bụng phân vân:
+
+,Lỡ ảnh bảo xuống thuyền thì sao?.. . ừ, mà mình chỉ cần coi qua một chút thôi mà?”
+
+Chen đâu mà chen dữ vậy hả? – một thằng bé lùn lùn, béo ục ịch, trợn mắt hích khuỷu tay vào hông tôi.
+
+– Cho tao coi một chút mà!
+
+Nghe tôi nói bằng một giọng nhường nhịn, thằng bé tức thời nép người qua để cho tôi lách vào, rồi nó nhe răng cười làm như tôi với nó đã quen từ hồi nào.
+
+– Mày mới tới à? Hồi nãy vừa diễn trò hai con khỉ kéo xe mê lắm? ừ, mình mới tới! – tôi đáp cho có đáp, không còn chú ý nghe nó kể những gì bên tai nữa.
+
+Người khách mãi võ mặc quần áo chẽn màu đen đã bán qua một lượt thuốc cao, bắt đầu giới thiệu tiết mục “Em bé mười tuổi nhào qua vòng lửa
+
+– Trò này đêm qua nó diễn rồi. Không thể tả được mà!
+
+– thằng bé lùn lùn béo ục ịch lại rỉ tai tôi, giọng đầy tự hào về cái chuyện nó đã được xem trước tôi.
+
+Một em bé vận bộ quần áo bằng xa tanh màu đỏ, tóc tết quả đào, mang đôi hài vải đen bước ra, cúi chào khán giả Chiếc vòng sắt quấn giẻ tẩm dầu lồng giữa một khung gỗ hình chữ nhật, dựng đứng cỡ ngang tầm mắt tôi, bày giữa hiện trường. Dứt loạt vỗ tay chung quanh, người Khách già cầm ngọn đuốc châm vào chiếc vòng quấn dẻ. Tức thời một vầng lửa hình trong như chiếc bánh xe lửa của Na-tra(Một nhân vật trong truyện “phong thần” trung quốc) phực cháy vù vù. Em bé lại nghiêng đầu chào mọi người rồi dún chân một cái, chạy tới ba bước gieo mình như một con thoi bay qua vòng lửa.
+
+Mắt tôi hoa lên, chỉ còn thấy cái bóng đỏ lao qua lao lại xuyên ngang vầng lửa, và hai tai tôi ù đi vì tiếng reo hò, tiếng vỗ tay vang dậy-
+
+– Đêm qua, nó nhào sáu lần mà bữa nay nó tăng lên tới tám lần! Mày thấy ghê chưa? – thằng bé lùn lùn béo ục ịch hích tôi, vênh mặt nói.
+
+Trong lúc người Khách cầm mấy chai rượu thuốc đi vòng quanh chào hàng thì em bé vừa đứng thở vừa đưa hai bàn tay nhỏ phủi phủi những sợi tóc cháy trước trán.
+
+Dáng như đêm nay số thuốc bán được ít ỏi quá. Người Khách mặt buồn buồn, đặt mấy chai rượu thuốc lên cái rương lớn màu đen, cố làm ra vẻ tươi tỉnh:
+
+– ông bà cô bác xem xong trò này, rồi hẵng mua giùm sau cũng được. Hầy? Tả lồ lên(đánh thanh la lên)”
+
+Tiếng trống, tiếng thanh la lại khua rung dồn dập.
+
+Ông ta cầm một nắm dao con sáng loáng tung lên bắt từng chiếc một, rồi lần lượt cắm tất cả mười hai con dao ấy vào những khe hở đục trong cái vòng sắt còn dang rừng rục lửa. Những mũi dao nhọn hình lá trúc đào lấp lánh ánh thép trắng xanh tua tủa chĩa ngược vào trong, càng làm thu hẹp cái khoảng tròn ban nãy vừa đủ một thân mình người chui qua. Người Khách xiếc nhìn mấy người đánh trống đánh thanh la, ra hiệu ngừng tay. ông ta nhường mắt hét lên một tiếng, rùng mình thu người lại và lập tức dún chân bay qua giữa những mũi dao tua tủa. Tôi nhắm mắt lại. Trời ơi! Chỉ nhích ra một phân, bất cứ ở phía nào thì những mũi dao sắc nhọn như gươm kia cũng đâm xóc lút vào da thịt. ông ta lao đi lao lại ba lần như vậy mà trông sắc mặt và hơi thở không chút biến đổi.
+
+– Người lớn làm không hay. Em bé làm mới hay? – người Khách vung tay giới thiệu.
+
+Em bé gái bước ra, nghiêng đầu chào mọi người. Hai bàn chân đi đôi hài vái đen nhỏ xíu khơi động giẫm lên giẫm xuống một chỗ trên mặt đất lởm chởm những hòn cuội Tôi hồi hộp qua. Đôi môi em bé run run. Rõ ràng là nó đang cố trấn tĩnh trước phút biểu diễn cái trò vô vùng nguy hiểm này.
+
+Có ba ở đây, con? – người Khách nói bằng giọng khuyến khích vui vẻ, nhưng cặp mắt ông ta trông nghiêm nghị đáng sợ.
+
+Em bé tức thời hét lên một tiếng như bố, dún chân bay xuyên qua giữa vòng dao rực cháy. Chung quang im phăng phắc. Mọi người không kịp vỗ tay. Có lẽ vì sự thán phục cùng với nỗi lo sợ thay cho em bé cùng một lúc ập vào làm choáng ngợp mọi trái tim người. Em bé lao qua vòng dao lần thứ nhất, rất dễ dàng. Em lại mím môi lao qua lần thứ hai . Đến lần thứ ba, thì một tiếng thét kinh hoàng của những người xem nổi lên chung quanh tai tôi.
+
+Em bé đã ngã bổ xuống bàn chân phải mắc vào một mũi dao.
+
+Người xem chạy ùa vào. ông Khách già ôm ngang lưng con gỡ chiếc hài đen ra khỏi mũi dao. Một dòng máu đỏ từ trong vết thương bàn chân em bé tuôn ra như suối .
+
+Không hề gì mà! Dán một lá thuốc cao, khỏi ngay thôi? – ông Khách vùa nói vừa rắc một ít thuốc cầm máu màu đen để hàn miệng vết thương, và trao đứa con gái cho một bà xẩm vác đưa xuống chiếc thuyền đậu trong một con kênh gần đấy.
+
+Bọn trẻ nhỏ ùn ùn chen lấn chạy theo coi. Mặc dầu đám hát vẫn tiếp tục biểu diễn, nhưng tôi không còn lòng đã nào xem nữa. Tôi cũng chạy theo đám trẻ, lần xuống mé sông đứng ngó vào thuyền.
+
+Em bé ngồi tựa lưng vào mui, đôi mắt to đen láy nhìn xuống vết thương trên mu bàn chân đã được bó một lá thuốc cao. Không thấy máu chảy nữa. Nhưng bàn chân cứ run run, lâu lâu lại giật một cái, khiến em nhắm mắt lại Bà xẩm cầm ngọn đèn soi vào chân con, tròng mắt đỏ hoe.
+
+– Con có đau lắm không, con?
+
+Em bé nhắm nghiền mắt, hai tay bóp chặt trên ống chân, lắc lắc đầu. Một giọt nhóc mắt người mẹ rơi xuống bàn chân nhỏ của đứa con đau. Em bé mở choàng mắt ra, hốt hoảng nhìn mẹ, như vừa bị một giọt nước sôi rơi trúng vào chân.
+
+– Ơ không có làm sao đâu, má à? Buốt buốt một tí thôi!
+
+Vừa nói, cô bé vừa quờ tay ôm ngang lưng mẹ và cố nhoẻn cười cho mẹ yên lòng. Nhưng sau đó một chốc, em lại nhắm mắt lại. Mấy giọt mồ hôi rịn rịn ra trên vầng trán nhỏ. Tôi biết chắc chắn rằng em bé đau lắm. Tôi không dám đứng nhìn nữa, bèn trở lên chợ.
+
+Bấy giờ đám hát cũng vừa tan. Tôi sực nhớ ra là mình đã đi lâu quá. Tôi liền chạy vào quán cà-phê. Không thấy anh học sinh côle đâu. Tôi nhằm hướng đầu ngọn cây bàng khô, chạy một mạch về . Đoàn thuyền vận tải quân lương không còn chiếc nào đậu ở đó nữa. Tôi chạy dọc theo bến chợ một quãng, hi vọng họ vừa rời đi, mình còn có thể đuổi theo kịp.
+
+Trời tối quá. Lửa đèn trên sông dần dần thưa thớt. Chợ cũng đã tan rồi. Tôi trèo lên một đống gạch, đứng ngóng theo làn nước lấp loáng ánh sao xuôi xuôi trên dòng kênh không biết chảy về đâu. Một người đàn bà quảy đôi thùng xuống bến lấy nước, đứng lại nhìn tôi hồi lâu rồi hỏi:
+
+Có Phải mày ở trong đoàn thuyền vận tải không?
+
+– Dạ phải! – tôi vội đáp, bụng hơi mừng – Họ đi đâu rồi dì?
+
+– Trời ơi? Mày đi đâu mà họ tìm mày khắp cả chợ? Họ đi rồi. Đi từ tám hoánh nào rồi ! Nhổ sào từ hồi nước mới ròng. Và người đàn bà chép miệng: – Chà, chừng như họ được lệnh đi ngay hay sao ấy. Gấp lắm thì phải!
+
+– Dì có nghe họ nói đi đâu không – tôi hỏi lại.
+
+– Chuyện quân sự mà, biết sao lọt! Thế mày cũng không biết à? Họ không nói với mày à?
+
+– Không , dì ạ!
+
+– Mày có ba má, anh em gì trên thuyền không?
+
+– Không. Cháu đi quá giang thôi. Người đàn bà chành môi ra dài giọng:
+Thảo nào? … Người ta có việc của người ta chứ. Ai bảo cứ ham chơi, đi những đâu? .
+
+Người đàn bà không nói gì nữa, lẳng lặng xuống sông gánh nước lên chợ. Tự nhiên tôi thấy trong lòng mình rưng muốn khóc…
+
+Ban ngày tôi thẩn tha đi dọc theo bến, mong có gặp người nào quen trong đoàn thuyền vận tải quân lương trở lại đây không. Ban đêm tôi, tôi vào ngủ trong chợ, chui dưới gầm một thớt bán thịt lợn của người Hoa kiều.
+
+Những người đàn bà trong chợ gọi tôi là thằng bé tản cư. Nghe đâu hồi tháng trước, chợ này chỉ họp buổi sáng. Hơn tháng nay, chợ nhóm suốt ngày, có đêm mãi chín mười giờ khuya mới tan. Người tản cư ở các vùng trên đổ xuống ùn ùn như nước. Mặt nước dòng kênh không mấy lúc ngớt tiếng khua động mái chèo. Cái chợ con nằm trên ngã ba kênh của xứ làng quê hẻo lánh này trở nên đông vui nhộn nhịp như một trấn nhỏ. Người từ Sài Gòn chạy xuống tới đây cũng có. Người vùng Tiền Giang, Hậu Giang cũng có. Nhiều con mụ đàn bà mặc áo lụa trắng rô-dê(tiếng pháp có nghĩa là thêu ), che dù đầm, núng na núng nính rén bước đi lên chợ, mắt cứ ngó xuống chân dép xăng-đan, sợ bùn đất vấy gấu quần. Tiền bạc đựng nứt ví, nhưng mua gì cũng chê ỏng chê eo, trả giá rẻ mạt. Tôi chỉ nghe họ than phiền với nhau rằng: Cánh mình dở quá, không chặn nổi Tây”, rằng “chạy vào đây không có nước đá uống, không có nước ngọt tắm”. Thấy tôi lảng vảng đến gần chỗ thuyền họ, họ nhìn chòng chọc vào tôi, bộ như muốn ăn thịt: ê đi đi, thằng nhỏ. Mò mẫm toan an cắp hả?” Tôi ức đến muốn khóc. Có ai quen, gặp tôi bây giờ cũng không nhận ra tôi nữa đâu. Ngồi bó gối trên cầu nhìn xuống nước, chính tôi cũng khó nhận ra mình trong cái hình thù quái dị này. Tóc tôi mọc dài gần phủ gáy, hai quầng mắt hõm sâu, cổ gầy nhom như cổ cò ma. Chiếc áo vét tông bằng ka ki trắng của anh học sinh côle cho tôi, giờ đây đã biến thành màu cháo lòng, vạt áo phủ xuống tận gối, cứ kêu loạt xoạt theo mỗi bước đi.
+
+Còn chiếc quần đùi bằng vải len của tôi thì bạc phếch ra, hai ống rách te tua như bị cá chốt rỉa.
+
+Ai nhờ việc gì, tôi cũng giúp. Mấy thím bán cá nhờ tôi khiêng thúng mủng, xách nước cho họ thay nước rộng cá.
+
+Em bé? Vác cho qua ( tiếng xưng tôi thân mật của người có tuổi ) bó mía đi!
+
+– Em bé? Đội thúng tôm lên chợ giúp dì đi.
+
+Nhỏ? Nhỏ! Chạy xuống mé kênh cắm lại cây sào của dì sắp trôi kia!
+
+Kẻ cho tôi nắm xôi, người cho tôi gói bắp. Không ai biết tôi từ đâu trôi dạt tới .
+
+Ngày nào tôi cũng tạt qua trước ngôi quán rượu một lần. Biết đâu bác tài công già hôm nọ chẳng qua ngang mà ghé lại đây?
+
+Những ngày đầu mùa mưa năm 1946 cứ ì ạch nặng nề lê đi từng bước khó khăn như người đàn bà sắp ở cữ cứ trở dạ mãi mà vẫn chưa đẻ được. Ở cái vùng nước mặn miền tây Nam bộ này, người ta mong mưa như bọn trẻ con chúng tôi mong mẹ về chợ. Mưa có nước ngọt uống, có nước cầy bừa, nhưng điều quan trọng nhất trước mắt, là mưa có thể làm chậm bước của địch trong các cuộc tiến công, gây trở ngại cho chúng trên các nẻo đường hành quân vì trơn tuột, sình lầy.
+
+Trời càng sắp mưa thì càng oi bức khó chịu, ban ngày mặt trời đổ nắng chang chang, nóng như giội lửa. Chỉ khi đêm đến mới có đôi chút gió lao xao từ vùng vịnh Thái
+
+Lan thổi tới. Thường thường, đêm nào người trong chợ cũng xách chiếu ra ngồi dọc bờ kênh hóng mát, coi thuyền tản cư và thuyền chở Cộng hòa vệ binh( tổ chức chính quy của quân đội sau ngày nam bộ cướp chính quyền 1 trong 4 sư đoàn dân quân cách mạng nam bộ ) từ mạn trên trẩy xuống. Quán rượu của dì Tư Béo là nơi tụ họp của những người thức khuya nhất, có khi đến một hai giờ sáng hãy còn đỏ đèn và ran tiếng nói cười.</div>
             </div>
 
             <div class="chapter" id="chapter-2" data-chapter-num="2" data-loaded="false">
@@ -452,7 +749,7 @@
             </div>
 
             <div class="chapter" id="chapter-16" data-chapter-num="16" data-loaded="false">
-                <h2 class="chapter-title">Chương 16: Qua sróc Miên</h2>
+                <h2 class="chapter-title">“Chương 16: Qua sróc Miên</h2>
                 <div class="chapter-content"></div>
             </div>
 
@@ -476,126 +773,144 @@
                 <div class="chapter-content"></div>
             </div>
 
-            <div class="pagination-controls">
-                <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
-                <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
-                <button class="pagination-btn next-btn" onclick="navigateNext()">Next →</button>
-            </div>
-
         </div>
 
         <!-- Japanese Content -->
         <div id="japanese-content" class="tab-content">
-            <div class="pagination-controls">
-                <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
-                <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
-                <button class="pagination-btn next-btn" onclick="navigateNext()">Next →</button>
+            <div class="toc">
+                <h2>📚 目次</h2>
+                <div class="toc-grid">
+                    <div class="toc-item" onclick="scrollToChapter(1)">第一章:見知らぬ田舎の小さな市場村</div>
+                    <div class="toc-item" onclick="scrollToChapter(2)">第二章:居酒屋にて</div>
+                    <div class="toc-item" onclick="scrollToChapter(3)">第三章:蛇売りの老人</div>
+                    <div class="toc-item" onclick="scrollToChapter(4)">第四章:恐ろしい夜</div>
+                    <div class="toc-item" onclick="scrollToChapter(5)">第五章:昔日を振り返る</div>
+                    <div class="toc-item" onclick="scrollToChapter(6)">第六章:流浪生活の始まり</div>
+                    <div class="toc-item" onclick="scrollToChapter(7)">第七章:養父母の家族</div>
+                    <div class="toc-item" onclick="scrollToChapter(8)">第八章:蛇釣りに行く</div>
+                    <div class="toc-item" onclick="scrollToChapter(9)">第9章:蜜を採りに</div>
+                    <div class="toc-item" onclick="scrollToChapter(10)">第10章:森の奥の孤独な男の小屋で</div>
+                    <div class="toc-item" onclick="scrollToChapter(11)">第11章:森が燃える</div>
+                    <div class="toc-item" onclick="scrollToChapter(12)">第12章:虎との遭遇</div>
+                    <div class="toc-item" onclick="scrollToChapter(13)">第13章:ヴォ・トンの死</div>
+                    <div class="toc-item" onclick="scrollToChapter(14)">第14章:復讐の矢</div>
+                    <div class="toc-item" onclick="scrollToChapter(15)">第15章:ワニ狩りの仲間</div>
+                    <div class="toc-item" onclick="scrollToChapter(16)">第16章:ミエン人の村を越えて</div>
+                    <div class="toc-item" onclick="scrollToChapter(17)">第17章:鳥の広場</div>
+                    <div class="toc-item" onclick="scrollToChapter(18)">第18章:カマウのマングローブ林</div>
+                    <div class="toc-item" onclick="scrollToChapter(19)">第19章:森の中のゲリラ</div>
+                    <div class="toc-item" onclick="scrollToChapter(20)">第20章:戦いへ出発</div>
+                </div>
             </div>
 
-            <div class="chapter" id="chapter-ja-1" data-chapter-num="1" data-loaded="false">
-                <h2 class="chapter-title">第一章:見知らぬ田舎の小さな市場村</h2>
-                <div class="chapter-content"></div>
+            <div class="chapter" id="chapter-ja-1">
+                <h3 class="chapter-title">第一章:見知らぬ田舎の小さな市場村</h3>
+                <div class="chapter-content">
+                    <p>この市場村に足を踏み入れた日から、私の流浪の生活が始まったのだろうか。夜中に目を覚まし、遠く寂しい田畑から吹き付ける物悲しい風の音を聞き、この市場の前に果てしなく続く真っ直ぐな運河に架かった水場の階段の下で轟々と流れる水音に耳を澄ませる夜々に、私はいつもぼんやりとそう考えるのだった。 この市場村に流れ着いて、数えてみればもう半月以上になる。 ある夕方、南部抵抗委員会の軍糧輸送船団がここに停泊した。補給班にいるコレージュの学生が、ハウ・ザン川から私を船に乗せてここまで連れてきて、私に言った。「三十分ほど停泊して、おじさんたちが市場で食料を買うだけだ。岸に上がりたいか?」 私は首を横に振った。すると彼は私の肩を叩いて大声で笑った。「それならいいな、船首に座って岸を眺めて遊んでいてもいい。荷物を見ててくれよ!」彼は長い竿を伝って別の船に渡り、リスのように素早く体を縮めて、市場に行く人々の船が密集して停泊している岸辺沿いの何隻かのサンパンや小舟の舷側を乗り越え、ぱっと岸に飛び降りた。 「どこにも行くなよ!コーヒーを飲んだら、お前にパンを持って行ってやるからな!」彼は腰に掛けたモーゼル銃を担ぎ上げ、私に手を振りながら、つま先立ちになって、私に聞こえるよう大声で言った。 「わかった!聞こえたよ...行ってきて!」私は口に手を当てて答えた。 私は米を運ぶ船の船首に座って両足をぶらぶらさせながら、市場を見上げた。華僑の商店や食堂のガソリンランプが明々と灯されていた。広い空き地には、黒いバーバー服を着て黒い格子模様のスカーフを肩に斜めに掛けた農婦たちが、大きな籐籠や、何が入っているのかよく見えない竹籠をいっぱいに詰め込んだものの後ろに、長い列をなして座っていた。売り手たちは皆、自分の座る場所に小さなランプを灯していた。そして買い物客たちも、多くの人が手にランプを持っていた。 買い手のランプ、売り手のランプ、まるで星が降るようだった。 騒がしい人混みと市場の奥で絶えず動いている灯火の中から、突然四本の松明が真っ赤に燃え上がり、太鼓とシンバルの音が激しく鳴り響いた。 「シャントン劇だぞ、おい!」</p>
+                    <p>「また女の子が火の輪くぐりをするぞ!早く行こう、おい!」 子供たちがあちこちの路地から、暗がりから、船や小舟の下から這い出て、一目散に叫びながら旅回りの劇団のところへ走って行った。自然と私の両足も疼き、ついて行きたくなった。もう芸人の拡声器から演目紹介の声が聞こえ始め、周りを囲んだ観客の拍手と歓声が聞こえてきた。 私はつま先立ちになって、向こうで何をしているのか見ようとした。遠すぎて、人の頭がうごめいているのが見えるだけで、時々笑い声が上がるのが聞こえる。「もう飽きたよ。そんな芸、何が珍しいんだ?」私は心の中でそう言い聞かせ、軽蔑したように騒がしい人々の方を見て、胸の中で湧き上がる衝動を抑えようとした。 「アンはまだそこにいるか?」年老いた船頭が、肉の串と野菜の束を持ちながら長い竿を伝って船に上がってきて、しゃがれた声で尋ねた。 「ここにいますよ、おじさん!」私は急いで答えたが、心は少し高ぶっていた。 「なあ、お前シャントン劇を見たいか?」おじさんがまた尋ねた。 「兄さんたちが、ここで船を見張っていろって」 船頭は肉の串を籠に放り込み、背中をひねって背骨がポキポキ鳴り、息は酒臭かった。 「おい!お前、鹿肉の野菜炒めを食ったことあるか?明日の朝、たらふく食わせてやるからな、覚えとけよ!」そしておじさんは大声で笑った。 「俺は川という川を全部回ったが、あの店の女将ほど太った奴は見たことがねえ。俺に五杯も『タムボン・マットト』の酒を注いでくれたのに、一滴もこぼさなかったんだぜ」</p>
+                    <p>「おじさんは市場でコーヒーを飲みに行ったんですか?」私は尋ねた。 「俺がコーヒーなんて飲むかよ?ああ、あいつらはシャントン劇のところの店でコーヒーを飲んでるのか?」 「いいか、俺がここにいるから、お前は市場に遊びに行ってこい。船着場に戻る道は覚えてるか?遠くに行くなよ、迷子になるぞ」 なんてこった、生まれてからずっと都会で暮らしてきた子供の私が、この田舎の小さな市場で迷子になるだろうか?私は暗闇の中で密かに笑い、船首から体を投げ出して船の板に飛び降りた。 「何笑ってんだ、アン?」おじさんが目を凝らして私に尋ねた。 「いえ、何も笑ってませんよ」 「俺が酔ってると思ってるのか?おい、俺にはあそこの運河の真ん中に浮かんでる水草まで見えるんだぞ!...ああ、潮が満ちてきたな」 「行ってきます、おじさん!」 おじさんの返事を待たずに、あっという間に私は岸に足を踏み入れた。なんてこった!なんて不思議な市場なんだ?フランス軍が攻めてくるから、動物園を開放して売り出しているのか?大きな鉢ほどもあるスッポンが、ひっくり返って置かれ、老人の前で四本の足をバタバタさせている。ボウルほどもある黄色い亀が、まるで同じ型から出したようにそっくりで、籐の籠の中で首を引っ込めて横たわっている。ここには人々が肉を切り分けたばかりの鹿がいて、その頭部は皮も剥がれずそのまま、チャム葉の上の赤い肉の山の真ん中に置かれていた。海蟹もいる、蛙もいる、貝もいる。魚や海老となると非常に多く、様々な種類の海老が、数え切れないほどある。私はさらに数歩進み、蜂蜜の香りを放つ黄色く熟したパイナップルの山を通り過ぎると、二匹の大蛇がとぐろを巻いており、その鱗は硬貨のように輝いていた。暗がりの金属製の鳥かごから、鳥たちが喧嘩をする甲高い鳴き声が聞こえた。ランプは鳥たちが喧嘩して羽ばたいたために消えてしまい、売り主はまだ点け直していなかった。小さな猿が行ったり来たりせわしなく飛び跳ね、カボチャの山に登ろうとしている。私が通り過ぎるのを見ると、猿は歯をむき出してキーキー鳴き、私を見てから売り主の方を振り返った。まるで、なぜあの髭もじゃの老人は首の鎖を外して、私のように自由に遊びに行かせてくれないのかと私に尋ねてくれと言っているようだった...旅回りの劇団の方で、爆竹が一斉に鳴り響いた。私はもう周りを見る気もなくなった。私はまた一目散に、目をつぶって鼻をつまんで、抗いがたい吸引力を持つ騒々しい音の方へ突進した。 「ちょっとだけ見るだけだ!」私は心の中でそう思い、棘だらけのパンノキの木陰に隠れた小さな喫茶店の中を覗き込んだ。コレージュの学生の丸まった背中が、首の後ろに垂らした幅広のバンハット帽をかぶった自衛民兵たちの肩越しにちらりと見えた。私は彼にここに来たことを伝えようと店に入りたかったが、躊躇した。</p>
+                    <p>「もし彼が船に戻れと言ったら?...でも、ちょっと見るだけだから」 「何押してるんだよ、そんなに?」背が低くずんぐりした太った男の子が、目を見開いて肘で私の脇腹を突いた。 「ちょっと見せてよ!」 私が譲歩する口調で言うと、その男の子はすぐに体をずらして私を中に入れ、そして歯を見せて笑った。まるで私と彼がずっと前から知り合いだったかのように。 「お前、今来たのか?さっき二匹の猿が車を引く芸があって、すごかったぞ?ああ、今来たんだ!」私は適当に答え、もう彼が耳元で何を話しているのか注意を払わなかった。 黒い中国服を着た芸人の口上役が、一通り膏薬を売り終えて、「十歳の少女が火の輪くぐり」という演目を紹介し始めた。 「この芸は昨夜もやったんだ。言葉にできないほど凄いぞ!」 背の低いずんぐりした太った男の子が私の耳元で囁き、自分が私より先に見たことを誇らしげな声で言った。 赤いサテンの衣装を着て、髪を桃型に結い、黒い布靴を履いた小さな女の子が出てきて、観客に頭を下げた。油を染み込ませた布を巻いた鉄の輪が、四角い木枠の中央に吊るされ、私の目の高さほどに垂直に立てられ、演技場の中央に置かれていた。周りの拍手が終わると、年老いた芸人が松明を持って布を巻いた輪に火を点けた。たちまち、まるで哪吒の火の車輪のような円い炎が、ゴーゴーと燃え上がった。女の子は再び頭を下げて皆に挨拶し、一度跳び、三歩走って梭のように体を投げ出し、火の輪を飛び抜けた。 私の目は眩み、赤い影が火の輪を何度も往復するのが見えるだけで、両耳は歓声と拍手の音で聞こえなくなった。</p>
+                    <p>「昨夜は六回飛んだのに、今日は八回に増えてる!すごいだろ?」背の低いずんぐりした太った男の子が私を突き、得意げな顔で言った。 芸人が何本かの薬酒の瓶を持って売り歩いている間、女の子は立って息をしながら、小さな両手で額の前の焦げた髪の毛を払っていた。 どうやら今夜は薬の売れ行きが少なすぎるようだ。芸人は少し悲しそうな顔をして、何本かの薬酒の瓶を黒い大きな箱の上に置き、わざと元気な様子を作った。 「皆さん、この芸をご覧になってから、後でお買い上げいただいても結構です。さあ、鐃鈸を鳴らせ!」 太鼓とシンバルの音がまた激しく鳴り響いた。 芸人は一握りの小さなキラキラ光るナイフを空中に投げて一本ずつ受け取り、それら十二本のナイフ全てを、まだ火が燃え盛る鉄の輪の隙間に順番に突き刺した。竹の葉の形をした鋭いナイフの刃が、青白く輝く鋼鉄の光を放って内側に向かって突き出し、さっきまで人が通り抜けるのにちょうどいい大きさだった円い空間をますます狭くした。芸人は太鼓とシンバルを叩く人たちを見て、手を止めるよう合図した。彼は目を見開いて一声叫び、身震いして体を縮め、すぐに跳び上がって、突き出たナイフの刃の間を飛び抜けた。私は目を閉じた。なんてこった!少しでもずれたら、どちら側でも、あの剣のように鋭いナイフが肉に突き刺さってしまう。彼は三回も行ったり来たりしたが、顔色も呼吸も全く変わらなかった。 「大人がやっても面白くない。子供がやるから面白いんだ!」芸人が手を振って紹介した。 女の子が出てきて、頭を下げて皆に挨拶した。黒い小さな布靴を履いた両足が、小石がごろごろした地面の上で踏みしめるように動き始めた。私は不安になった。女の子の唇が震えている。明らかに、この極めて危険な芸を披露する前に、必死で気持ちを落ち着けようとしているのだ。 「父さんがここにいるぞ、娘よ」芸人が励ますような明るい声で言ったが、彼の目は厳粛で恐ろしかった。 女の子はすぐに父親のように一声叫び、跳び上がって燃える刃の輪を飛び抜けた。周囲は静まり返った。皆は拍手する暇もなかった。おそらく女の子への賞賛と恐怖が同時に押し寄せて、人々の心を圧倒したからだろう。女の子は一回目の刃の輪を非常に簡単に飛び抜けた。彼女は再び唇を結んで二回目を飛び抜けた。三回目になると、観客の恐ろしい悲鳴が私の耳の周りで上がった。</p>
+                    <p>女の子が倒れた。右足がナイフの刃に引っかかったのだ。 観客たちが押し寄せた。年老いた芸人が娘の腰を抱え、黒い靴をナイフの刃から外した。女の子の足の傷から、泉のように赤い血が流れ出た。 「大したことない!膏薬を貼れば、すぐに治る!」芸人はそう言いながら、黒い止血薬を少し撒いて傷口を塞ぎ、娘を盲目の女性に渡して、近くの運河に停泊していた船に運ばせた。 子供たちがどっと押し寄せて追いかけた。劇団の公演は続いていたが、私はもう見る気がなくなった。私も子供たちの後を追い、川岸に降りて船の中を覗き込んだ。 女の子は船首に背中を預けて座り、大きな黒い瞳で、膏薬が巻かれた足の甲の傷を見つめていた。もう血は流れていなかった。しかし足はずっと震えており、時々ピクリと動いて、女の子は目を閉じた。盲目の女性がランプを持って娘の足を照らし、赤く腫れた目をしていた。 「痛いかい、娘よ?」 女の子は目をぎゅっと閉じ、両手でふくらはぎをしっかり握り、首を横に振った。母親の涙が一滴、痛む娘の小さな足に落ちた。女の子は急に目を開け、驚いて母親を見た。まるで熱湯の一滴が足に落ちたかのように。 「ああ、大丈夫だよ、お母さん。ちょっとズキズキするだけだから!」 そう言いながら、女の子は手を伸ばして母親の腰を抱き、母親を安心させようと無理に微笑んだ。しかしその後すぐに、また目を閉じた。小さな額に汗の粒が滲み出た。私は女の子がとても痛がっているのが確かだと分かった。私はもう見ていられなくなり、市場に戻った。 その頃には劇団の公演も終わっていた。私はふと、長く離れすぎたことに気づいた。私は急いで喫茶店に駆け込んだ。コレージュの学生の姿はどこにもなかった。私は枯れたガジュマルの木の方角を目指して、一気に走って戻った。軍糧輸送船団は一隻も停泊していなかった。私は船着場沿いをしばらく走り、彼らがたった今出発したばかりで、まだ追いつけるかもしれないと希望を持った。</p>
+                    <p>空は真っ暗だった。川のランプの灯りは次第にまばらになった。市場も解散していた。私はレンガの山に登り、星明りがきらめく運河の水面を見つめた。その運河がどこに流れて行くのか分からなかった。一人の女性が桶を担いで水を汲みに船着場に降りてきて、しばらく私を見つめてから尋ねた。 「お前、輸送船団にいたんじゃないのかい?」 「はい、そうです!」私は急いで答え、少し喜んだ。「皆さんはどこに行ったんですか、おばさん?」 「なんてこった!お前がどこに行ってたもんだから、皆が市場中を探し回ってたんだよ!もう行ったよ。ずっと前に行っちまった!潮が満ちたばかりの時に竿を上げたんだ」そして女性は口を尖らせた。「ああ、緊急の命令でも受けたみたいだったよ。とても急いでたみたいだ!」 「おばさんは、皆がどこに行くと言ってたか聞きましたか?」私は尋ね返した。 「軍事のことだからね、分かるわけないよ!お前も知らないの?言われなかったの?」 「いいえ、おばさん!」 「お前には父母や兄弟が船にいたのかい?」 「いいえ。渡し船に乗っていただけです」女性は唇を長く伸ばした。 「道理でね...人には人の用事があるんだよ。誰が遊びに夢中になって、あちこちうろつけって言ったんだい?」</p>
+                    <p>女性はそれ以上何も言わず、静かに川に降りて水を汲んで市場に担いで行った。突然、私は胸の中が熱くなって泣きたくなった... 昼間、私は船着場沿いをぼんやりと歩き、軍糧輸送船団の知り合いが戻ってこないか期待した。夜、私は市場で寝て、華僑の豚肉売り場の台の下に潜り込んだ。 市場の女性たちは私を「避難してきた子」と呼んだ。聞くところによると、先月まではこの市場は朝だけ開かれていたという。ここひと月余り、市場は一日中開かれ、夜は九時十時まで解散しなかった。上流地域からの避難民が水のように押し寄せてきた。運河の水面では櫂を漕ぐ音が絶えなかった。この辺鄙な田舎の運河の三叉路にある小さな市場が、小さな町のように賑やかになった。サイゴンから逃げてきた人もいる。ティエンザン、ハウザン地方の人もいる。多くの女性たちが白いロディエ(刺繍)のシルクのアオザイを着て、日傘をさし、もじもじと恐る恐る市場を歩き、サンダルの足元ばかり見て、泥がズボンの裾に跳ねるのを恐れていた。財布はお金でパンパンなのに、何を買うにも文句を言い、安く値切る。私は彼らが互いに愚痴を言うのを聞いただけだった。「我々の側はダメすぎる、フランス軍を止められない」とか、「ここに逃げてきても氷水を飲めないし、真水で風呂に入れない」とか。私が彼らの船の近くをふらふらしていると、彼らは私を睨みつけ、まるで食べてしまいたいかのようだった。「おい、行け行け、小僧。盗みでも企んでるのか?」私は悔しくて泣きそうになった。知り合いでも、今の私に会ったら誰も認識できないだろう。橋の上で膝を抱えて水面を見つめると、私自身もこの奇妙な姿の自分を認識するのが難しかった。髪は長く伸びてほぼ首筋まで覆い、目の周りは深くくぼみ、首は幽霊の鶴のように痩せこけていた。コレージュの学生がくれた白いカーキのベストンは、今や薄茶色に変わり、裾は膝まで届いて、歩くたびにパサパサと音を立てた。 私のウールのショートパンツは色褪せ、両裾はボロボロに破れて、魚に齧られたようだった。 誰かが何か頼み事をすると、私は手伝った。魚を売るおばさんたちが、私に竹籠を運んだり、魚の水を替えるための水を汲んでくれと頼んだ。 「坊や、サトウキビの束を運んでくれ!」 「坊や、海老の籠を市場まで担いでいってくれ」 「坊や!坊や!運河のところに降りて行って、おばさんの流れそうな竿を挿し直しておくれ!」 ある人は私におにぎりを、ある人はトウモロコシの包みをくれた。誰も私がどこから流れ着いたのか知らなかった。 毎日、私は居酒屋の前を一度は通った。あの時の年老いた船頭が、通りがかりにここに立ち寄らないだろうか?</p>
+                    <p>1946年の雨季の始まりの日々は、重苦しくゆっくりと、出産間近の女性が陣痛に苦しみながらもまだ産めないように、難儀に一歩一歩進んでいった。この南部の塩水地帯では、人々は雨を、私たち子供が母親の市場からの帰りを待つように待ち望んでいた。雨が降れば真水を飲め、田を耕す水がある。しかし目の前で最も重要なことは、雨が敵の進軍を遅らせ、軍道を滑りやすく泥沼にして障害を作ることができるということだった。 雨が近づけば近づくほど、息苦しく不快になった。昼間は太陽がさんさんと照りつけ、火を浴びせるように暑かった。夜になってようやく、タイランド湾の方角から少しの風が吹いてきた。いつも、市場の人々は夜にゴザを持って運河の岸辺に座って涼み、避難民の船や共和国衛兵を乗せた船が上流から下ってくるのを見た。トゥ・ベオおばさんの居酒屋は夜更かしする人々の集まる場所で、時には朝の一時二時まで灯りが点いていて、笑い声が響いていた。</p>
+                </div>
             </div>
 
             <div class="chapter" id="chapter-ja-2" data-chapter-num="2" data-loaded="false">
-                <h2 class="chapter-title">第二章:居酒屋にて</h2>
+                <h3 class="chapter-title">第二章:居酒屋にて</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-3" data-chapter-num="3" data-loaded="false">
-                <h2 class="chapter-title">第三章:蛇売りの老人</h2>
+                <h3 class="chapter-title">第三章:蛇売りの老人</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-4" data-chapter-num="4" data-loaded="false">
-                <h2 class="chapter-title">第四章:恐ろしい夜</h2>
+                <h3 class="chapter-title">第四章:恐ろしい夜</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-5" data-chapter-num="5" data-loaded="false">
-                <h2 class="chapter-title">第五章:昔日を振り返る</h2>
+                <h3 class="chapter-title">第五章:昔日を振り返る</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-6" data-chapter-num="6" data-loaded="false">
-                <h2 class="chapter-title">第六章:流浪生活の始まり</h2>
+                <h3 class="chapter-title">第六章:流浪生活の始まり</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-7" data-chapter-num="7" data-loaded="false">
-                <h2 class="chapter-title">第七章:養父母の家族</h2>
+                <h3 class="chapter-title">第七章:養父母の家族</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-8" data-chapter-num="8" data-loaded="false">
-                <h2 class="chapter-title">第八章:蛇釣りに行く</h2>
+                <h3 class="chapter-title">第八章:蛇釣りに行く</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-9" data-chapter-num="9" data-loaded="false">
-                <h2 class="chapter-title">第9章:蜜を採りに</h2>
+                <h3 class="chapter-title">第9章:蜜を採りに</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-10" data-chapter-num="10" data-loaded="false">
-                <h2 class="chapter-title">第10章:森の奥の孤独な男の小屋で</h2>
+                <h3 class="chapter-title">第10章:森の奥の孤独な男の小屋で</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-11" data-chapter-num="11" data-loaded="false">
-                <h2 class="chapter-title">第11章:森が燃える</h2>
+                <h3 class="chapter-title">第11章:森が燃える</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-12" data-chapter-num="12" data-loaded="false">
-                <h2 class="chapter-title">第12章:虎との遭遇</h2>
+                <h3 class="chapter-title">第12章:虎との遭遇</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-13" data-chapter-num="13" data-loaded="false">
-                <h2 class="chapter-title">第13章:ヴォ・トンの死</h2>
+                <h3 class="chapter-title">第13章:ヴォ・トンの死</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-14" data-chapter-num="14" data-loaded="false">
-                <h2 class="chapter-title">第14章:復讐の矢</h2>
+                <h3 class="chapter-title">第14章:復讐の矢</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-15" data-chapter-num="15" data-loaded="false">
-                <h2 class="chapter-title">第15章:ワニ狩りの仲間</h2>
+                <h3 class="chapter-title">第15章:ワニ狩りの仲間</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-16" data-chapter-num="16" data-loaded="false">
-                <h2 class="chapter-title">第16章:ミエン人の村を越えて</h2>
+                <h3 class="chapter-title">第16章:ミエン人の村を越えて</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-17" data-chapter-num="17" data-loaded="false">
-                <h2 class="chapter-title">第17章:鳥の広場</h2>
+                <h3 class="chapter-title">第17章:鳥の広場</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-18" data-chapter-num="18" data-loaded="false">
-                <h2 class="chapter-title">第18章:カマウのマングローブ林</h2>
+                <h3 class="chapter-title">第18章:カマウのマングローブ林</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-19" data-chapter-num="19" data-loaded="false">
-                <h2 class="chapter-title">第19章:森の中のゲリラ</h2>
+                <h3 class="chapter-title">第19章:森の中のゲリラ</h3>
                 <div class="chapter-content"></div>
             </div>
 
             <div class="chapter" id="chapter-ja-20" data-chapter-num="20" data-loaded="false">
-                <h2 class="chapter-title">第20章:戦いへ出発</h2>
+                <h3 class="chapter-title">第20章:戦いへ出発</h3>
                 <div class="chapter-content"></div>
-            </div>
-
-            <div class="pagination-controls">
-                <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
-                <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
-                <button class="pagination-btn next-btn" onclick="navigateNext()">Next →</button>
             </div>
 
         </div>
@@ -604,36 +919,21 @@
     </div>
 
     <script>
-        async function switchTab(tab) {
+        function switchTab(tab) {
             const vietnameseContent = document.getElementById('vietnamese-content');
             const japaneseContent = document.getElementById('japanese-content');
             const tabButtons = document.querySelectorAll('.tab-button');
-
-            // Get current chapter before switching
-            const currentChapter = getChapterFromURL();
 
             if (tab === 'vietnamese') {
                 vietnameseContent.classList.add('active');
                 japaneseContent.classList.remove('active');
                 tabButtons[0].classList.add('active');
                 tabButtons[1].classList.remove('active');
-
-                // Load and display current chapter in Vietnamese
-                await loadChapter(currentChapter, false);
-                displaySingleChapter(currentChapter, false);
-                updateDropdownSelection(currentChapter, false);
-                updateNavigationState(currentChapter);
             } else {
                 vietnameseContent.classList.remove('active');
                 japaneseContent.classList.add('active');
                 tabButtons[0].classList.remove('active');
                 tabButtons[1].classList.add('active');
-
-                // Load and display current chapter in Japanese
-                await loadChapter(currentChapter, true);
-                displaySingleChapter(currentChapter, true);
-                updateDropdownSelection(currentChapter, true);
-                updateNavigationState(currentChapter);
             }
 
             scrollToTop();
@@ -646,342 +946,148 @@
             const chapter = document.getElementById(chapterId);
 
             if (chapter) {
-                // Update URL hash
-                window.location.hash = `#/chapter/${chapterNum}`;
-
-                // Save reading position to localStorage
-                saveReadingPosition();
-
-                // Load chapter if not already loaded
-                if (chapter.dataset.loaded !== 'true') {
+                // Load chapter content before scrolling (if not already loaded)
+                if (chapterNum > 1 && chapter.dataset.loaded !== 'true') {
                     await loadChapter(chapterNum, isJapanese);
                 }
 
+                // Scroll to chapter after loading
                 chapter.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
+
+        async function loadChapter(chapterNum, isJapanese = false) {
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const chapterDiv = document.getElementById(chapterId);
+
+            if (!chapterDiv) {
+                console.error(`Chapter div not found: ${chapterId}`);
+                return false;
+            }
+
+            // Check if already loaded
+            if (chapterDiv.dataset.loaded === 'true') {
+                return true;
+            }
+
+            const contentDiv = chapterDiv.querySelector('.chapter-content');
+            if (!contentDiv) {
+                console.error(`Content div not found for chapter: ${chapterId}`);
+                return false;
+            }
+
+            // Show loading spinner
+            const loadingText = isJapanese ? '読み込み中...' : 'Đang tải...';
+            contentDiv.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <div class="loading-text">${loadingText}</div>
+                </div>
+            `;
+
+            try {
+                const jsonFile = isJapanese ? `chapters/json/chapter-ja-${chapterNum}.json` : `chapters/json/chapter-${chapterNum}.json`;
+                const response = await fetch(jsonFile);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load chapter: ${response.status}`);
+                }
+
+                const chapterData = await response.json();
+
+                // For Vietnamese: wrap plain text in paragraphs
+                // For Japanese: content already has HTML with <p> tags
+                if (isJapanese) {
+                    contentDiv.innerHTML = chapterData.content;
+                } else {
+                    // Split Vietnamese content by double newlines and wrap in <p> tags
+                    const paragraphs = chapterData.content.split('
+
+').filter(p => p.trim());
+                    contentDiv.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('
+');
+                }
+
+                // Mark as loaded
+                chapterDiv.dataset.loaded = 'true';
+                return true;
+            } catch (error) {
+                console.error(`Error loading chapter ${chapterNum}:`, error);
+
+                // Show user-friendly error message
+                const errorTitle = isJapanese ? 'エラー' : 'Lỗi';
+                const errorMessage = isJapanese
+                    ? 'この章の読み込みに失敗しました。ネットワーク接続を確認して、もう一度お試しください。'
+                    : 'Không thể tải nội dung chương. Vui lòng kiểm tra kết nối mạng và thử lại.';
+
+                contentDiv.innerHTML = `
+                    <div class="error-message">
+                        <strong>${errorTitle}</strong>
+                        ${errorMessage}
+                    </div>
+                `;
+                return false;
+            }
+        }
+
+        // Intersection Observer for lazy loading chapters on scroll
+        function setupLazyLoading() {
+            const options = {
+                root: null, // viewport
+                rootMargin: '500px', // Load 500px before entering viewport
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const chapterDiv = entry.target;
+
+                        // Check if already loaded
+                        if (chapterDiv.dataset.loaded === 'true') {
+                            observer.unobserve(chapterDiv);
+                            return;
+                        }
+
+                        // Determine if this is a Japanese chapter
+                        const isJapanese = chapterDiv.id.startsWith('chapter-ja-');
+
+                        // Extract chapter number from ID
+                        const chapterNum = parseInt(chapterDiv.dataset.chapterNum);
+
+                        if (chapterNum) {
+                            // Load the chapter
+                            loadChapter(chapterNum, isJapanese).then(success => {
+                                if (success) {
+                                    // Stop observing this chapter after successful load
+                                    observer.unobserve(chapterDiv);
+                                }
+                            });
+                        }
+                    }
+                });
+            }, options);
+
+            // Observe all chapter placeholders with data-loaded='false'
+            document.querySelectorAll('.chapter[data-loaded="false"]').forEach(chapter => {
+                observer.observe(chapter);
+            });
+        }
+
+        // Initialize lazy loading when DOM is ready
+        document.addEventListener('DOMContentLoaded', setupLazyLoading);
 
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Parse text content and create paragraph structure
-        function parseTextContent(text) {
-            const lines = text.trim().split('\n');
-            const title = lines[0];
-            const paragraphs = [];
-
-            let currentParagraph = '';
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                if (line.trim() === '') {
-                    if (currentParagraph.trim()) {
-                        paragraphs.push(currentParagraph.trim());
-                        currentParagraph = '';
-                    }
-                } else {
-                    currentParagraph += line;
-                }
-            }
-
-            if (currentParagraph.trim()) {
-                paragraphs.push(currentParagraph.trim());
-            }
-
-            return { title, paragraphs };
-        }
-
-        // Load chapter content dynamically from .txt files
-        async function loadChapter(chapterNum, isJapanese) {
-            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
-            const chapterElement = document.getElementById(chapterId);
-
-            if (!chapterElement) {
-                return;
-            }
-
-            // Check if already loaded
-            if (chapterElement.dataset.loaded === 'true') {
-                return;
-            }
-
-            const contentElement = chapterElement.querySelector('.chapter-content');
-
-            // Show loading indicator
-            contentElement.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p class="loading-text">Loading...</p></div>';
-
-            try {
-                // Build file path
-                const fileName = isJapanese ? `chapter${chapterNum}_ja.txt` : `chapter${chapterNum}.txt`;
-                const filePath = isJapanese ? `./chapters/ja/${fileName}` : `./chapters/vi/${fileName}`;
-
-                // Fetch chapter content
-                const response = await fetch(filePath);
-
-                if (!response.ok) {
-                    throw new Error(`Failed to load chapter: ${response.status} ${response.statusText}`);
-                }
-
-                const text = await response.text();
-                const { paragraphs } = parseTextContent(text);
-
-                // Populate DOM with paragraphs
-                contentElement.innerHTML = '';
-                paragraphs.forEach(paragraph => {
-                    const p = document.createElement('p');
-                    p.textContent = paragraph;
-                    contentElement.appendChild(p);
-                });
-
-                // Mark as loaded
-                chapterElement.dataset.loaded = 'true';
-
-            } catch (error) {
-                // Show error message with retry button
-                contentElement.innerHTML = `
-                    <p style="text-align: center; color: #d32f2f; margin-bottom: 1rem;">Failed to load chapter. Please try again.</p>
-                    <p style="text-align: center;">
-                        <button onclick="loadChapter(${chapterNum}, ${isJapanese})"
-                                style="padding: 0.5rem 1rem; background: var(--forest-green); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">
-                            Retry
-                        </button>
-                    </p>
-                `;
-            }
-        }
-
-        // Show/hide chapters - display only the specified chapter
-        function displaySingleChapter(chapterNum, isJapanese) {
-            const activeTab = document.querySelector('.tab-content.active');
-            const chapters = activeTab.querySelectorAll('.chapter');
-
-            // Hide all chapters in the active tab
-            chapters.forEach(chapter => {
-                chapter.style.display = 'none';
-            });
-
-            // Show only the specified chapter
-            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
-            const targetChapter = document.getElementById(chapterId);
-
-            if (targetChapter) {
-                targetChapter.style.display = 'block';
-            }
-        }
-
-        // URL parsing and validation functions
-        function getChapterFromURL() {
-            const hash = window.location.hash;
-
-            // Default to chapter 1 if no hash
-            if (!hash || hash === '' || hash === '#' || hash === '#/') {
-                return 1;
-            }
-
-            // Parse hash format: #/chapter/5
-            const match = hash.match(/^#\/chapter\/(\d+)$/);
-
-            if (!match) {
-                // Invalid format, return default
-                return 1;
-            }
-
-            const chapterNum = parseInt(match[1], 10);
-
-            // Validate chapter number (must be between 1 and 20)
-            if (isNaN(chapterNum) || chapterNum < 1 || chapterNum > 20) {
-                return 1;
-            }
-
-            return chapterNum;
-        }
-
-        // Show/hide back-to-top button and update reading progress
+        // Show/hide back-to-top button
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
             if (window.pageYOffset > 300) {
                 backToTop.classList.add('visible');
             } else {
                 backToTop.classList.remove('visible');
-            }
-        });
-
-        // Handle browser back/forward navigation
-        window.addEventListener('popstate', function () {
-            const chapterNum = getChapterFromURL();
-            scrollToChapter(chapterNum);
-        });
-
-        // Populate chapter dropdown with all chapter titles
-        function populateChapterDropdown(isJapanese) {
-            const activeTab = document.querySelector('.tab-content.active');
-            const dropdowns = activeTab.querySelectorAll('.chapter-selector');
-
-            // Get all chapter titles from the chapter elements
-            const chapterTitles = activeTab.querySelectorAll('.chapter-title');
-
-            dropdowns.forEach(dropdown => {
-                // Clear existing options
-                dropdown.innerHTML = '';
-
-                // Add all chapters as options
-                chapterTitles.forEach((title, index) => {
-                    const option = document.createElement('option');
-                    option.value = index + 1;
-                    option.textContent = title.textContent;
-                    dropdown.appendChild(option);
-                });
-            });
-        }
-
-        // Update dropdown selection to match current chapter
-        function updateDropdownSelection(chapterNum, isJapanese) {
-            const activeTab = document.querySelector('.tab-content.active');
-            const dropdowns = activeTab.querySelectorAll('.chapter-selector');
-
-            dropdowns.forEach(dropdown => {
-                dropdown.value = chapterNum;
-            });
-        }
-
-        // Master navigation function - navigates to specified chapter
-        async function navigateToChapter(chapterNum) {
-            // Parse and validate chapter number
-            const chapter = parseInt(chapterNum, 10);
-
-            if (isNaN(chapter) || chapter < 1 || chapter > 20) {
-                return;
-            }
-
-            // Determine current language tab
-            const activeTab = document.querySelector('.tab-content.active');
-            const isJapanese = activeTab.id === 'japanese-content';
-
-            // Update URL hash
-            window.location.hash = `#/chapter/${chapter}`;
-
-            // Save reading position to localStorage
-            saveReadingPosition();
-
-            // Load chapter content if not already loaded
-            await loadChapter(chapter, isJapanese);
-
-            // Display only this chapter (hide others)
-            displaySingleChapter(chapter, isJapanese);
-
-            // Update dropdown selection
-            updateDropdownSelection(chapter, isJapanese);
-
-            // Update navigation button states
-            updateNavigationState(chapter);
-
-            // Scroll to top
-            scrollToTop();
-        }
-
-        // Update navigation button states based on current chapter
-        function updateNavigationState(chapterNum) {
-            const activeTab = document.querySelector('.tab-content.active');
-            const prevButtons = activeTab.querySelectorAll('.prev-btn');
-            const nextButtons = activeTab.querySelectorAll('.next-btn');
-
-            // Disable Previous button on chapter 1
-            prevButtons.forEach(btn => {
-                btn.disabled = (chapterNum === 1);
-            });
-
-            // Disable Next button on chapter 20
-            nextButtons.forEach(btn => {
-                btn.disabled = (chapterNum === 20);
-            });
-        }
-
-        // Navigate to previous chapter
-        function navigatePrevious() {
-            const currentChapter = getChapterFromURL();
-            if (currentChapter > 1) {
-                navigateToChapter(currentChapter - 1);
-            }
-        }
-
-        // Navigate to next chapter
-        function navigateNext() {
-            const currentChapter = getChapterFromURL();
-            if (currentChapter < 20) {
-                navigateToChapter(currentChapter + 1);
-            }
-        }
-
-        // Save current chapter to localStorage
-        function saveReadingPosition() {
-            const currentChapter = getChapterFromURL();
-            try {
-                localStorage.setItem('currentChapter', currentChapter.toString());
-            } catch (error) {
-                // Silently fail if localStorage is not available
-            }
-        }
-
-        // Load saved chapter from localStorage
-        function loadReadingPosition() {
-            try {
-                const savedChapter = localStorage.getItem('currentChapter');
-                if (savedChapter) {
-                    const chapterNum = parseInt(savedChapter, 10);
-                    if (!isNaN(chapterNum) && chapterNum >= 1 && chapterNum <= 20) {
-                        return chapterNum;
-                    }
-                }
-            } catch (error) {
-                // Silently fail if localStorage is not available
-            }
-            return null;
-        }
-
-        // Auto-load chapter from URL on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            // Check for saved reading position first
-            const savedChapter = loadReadingPosition();
-            let chapterNum = getChapterFromURL();
-
-            // If no chapter in URL and there's a saved position, use it
-            if ((window.location.hash === '' || window.location.hash === '#' || window.location.hash === '#/') && savedChapter) {
-                chapterNum = savedChapter;
-                window.location.hash = `#/chapter/${chapterNum}`;
-            }
-
-            const isJapanese = false;
-            displaySingleChapter(chapterNum, isJapanese);
-
-            // Populate dropdowns for both languages
-            populateChapterDropdown(false); // Vietnamese
-
-            // Populate Japanese dropdowns
-            const japaneseContent = document.getElementById('japanese-content');
-            const japaneseDropdowns = japaneseContent.querySelectorAll('.chapter-selector');
-            const japaneseChapterTitles = japaneseContent.querySelectorAll('.chapter-title');
-
-            japaneseDropdowns.forEach(dropdown => {
-                dropdown.innerHTML = '';
-                japaneseChapterTitles.forEach((title, index) => {
-                    const option = document.createElement('option');
-                    option.value = index + 1;
-                    option.textContent = title.textContent;
-                    dropdown.appendChild(option);
-                });
-            });
-
-            // Set initial selection
-            updateDropdownSelection(chapterNum, isJapanese);
-
-            // Update navigation button states
-            updateNavigationState(chapterNum);
-
-            // Load chapter content if not already loaded
-            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
-            const chapterElement = document.getElementById(chapterId);
-            if (chapterElement && chapterElement.dataset.loaded !== 'true') {
-                loadChapter(chapterNum, isJapanese);
             }
         });
     </script>
