@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Paragraph Parsing</title>
+</head>
+<body>
+    <h1>Paragraph Parsing Test</h1>
+    <div id="output"></div>
+
+    <script>
+        // Copy of parseTextContent function from index.html
+        function parseTextContent(text) {
+            const lines = text.trim().split('\n');
+            const title = lines[0];
+            const paragraphs = [];
+
+            let currentParagraph = '';
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.trim() === '') {
+                    if (currentParagraph.trim()) {
+                        paragraphs.push(currentParagraph.trim());
+                        currentParagraph = '';
+                    }
+                } else {
+                    currentParagraph += line;
+                }
+            }
+
+            if (currentParagraph.trim()) {
+                paragraphs.push(currentParagraph.trim());
+            }
+
+            return { title, paragraphs };
+        }
+
+        // Test with sample content
+        async function testParsing() {
+            const response = await fetch('./chapters/vi/chapter1.txt');
+            const text = await response.text();
+            const { title, paragraphs } = parseTextContent(text);
+
+            document.getElementById('output').innerHTML = `
+                <h2>Title: ${title}</h2>
+                <p><strong>Total paragraphs: ${paragraphs.length}</strong></p>
+                <h3>First 3 paragraphs:</h3>
+                ${paragraphs.slice(0, 3).map((p, i) => `
+                    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
+                        <strong>Paragraph ${i + 1}:</strong><br>
+                        ${p}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        testParsing();
+    </script>
+</body>
+</html>
