@@ -272,6 +272,33 @@
                 padding: 0.7rem 0.5rem;
             }
         }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--sand-beige);
+            border-top-color: var(--forest-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -633,7 +660,7 @@
             const contentElement = chapterElement.querySelector('.chapter-content');
 
             // Show loading indicator
-            contentElement.innerHTML = '<p style="text-align: center; color: var(--text-light); font-style: italic;">Loading...</p>';
+            contentElement.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p class="loading-text">Loading...</p></div>';
 
             try {
                 // Build file path
