@@ -623,6 +623,9 @@
                 displaySingleChapter(currentChapter, false);
                 updateDropdownSelection(currentChapter, false);
                 updateNavigationState(currentChapter);
+
+                // Prefetch next chapter for improved performance
+                prefetchNextChapter(currentChapter, false);
             } else {
                 vietnameseContent.classList.remove('active');
                 japaneseContent.classList.add('active');
@@ -634,6 +637,9 @@
                 displaySingleChapter(currentChapter, true);
                 updateDropdownSelection(currentChapter, true);
                 updateNavigationState(currentChapter);
+
+                // Prefetch next chapter for improved performance
+                prefetchNextChapter(currentChapter, true);
             }
 
             scrollToTop();
@@ -875,6 +881,9 @@
             // Update navigation button states
             updateNavigationState(chapter);
 
+            // Prefetch next chapter for improved performance
+            prefetchNextChapter(chapter, isJapanese);
+
             // Scroll to top
             scrollToTop();
         }
@@ -938,6 +947,37 @@
             return null;
         }
 
+        // Prefetch next chapter content for improved performance
+        function prefetchNextChapter(currentChapter, isJapanese) {
+            // Remove any existing prefetch hints
+            const existingPrefetch = document.querySelector('link[rel="prefetch"][data-chapter-prefetch]');
+            if (existingPrefetch) {
+                existingPrefetch.remove();
+            }
+
+            // Calculate next chapter number
+            const nextChapter = currentChapter + 1;
+
+            // Don't prefetch if we're on the last chapter
+            if (nextChapter > 20) {
+                return;
+            }
+
+            // Build file path for next chapter
+            const fileName = isJapanese ? `chapter${nextChapter}_ja.txt` : `chapter${nextChapter}.txt`;
+            const filePath = isJapanese ? `./chapters/ja/${fileName}` : `./chapters/vi/${fileName}`;
+
+            // Create prefetch link element
+            const prefetchLink = document.createElement('link');
+            prefetchLink.rel = 'prefetch';
+            prefetchLink.href = filePath;
+            prefetchLink.as = 'fetch';
+            prefetchLink.setAttribute('data-chapter-prefetch', nextChapter);
+
+            // Add to document head
+            document.head.appendChild(prefetchLink);
+        }
+
         // Auto-load chapter from URL on page load
         document.addEventListener('DOMContentLoaded', function () {
             // Check for saved reading position first
@@ -983,6 +1023,9 @@
             if (chapterElement && chapterElement.dataset.loaded !== 'true') {
                 loadChapter(chapterNum, isJapanese);
             }
+
+            // Prefetch next chapter for improved performance
+            prefetchNextChapter(chapterNum, isJapanese);
         });
     </script>
 </body>

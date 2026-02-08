@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefetch Verification Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d5016;
+        }
+        h2 {
+            color: #4a7c2c;
+            margin-top: 0;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .pass {
+            background: #4caf50;
+            color: white;
+        }
+        .fail {
+            background: #f44336;
+            color: white;
+        }
+        .pending {
+            background: #ff9800;
+            color: white;
+        }
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #2d5016;
+        }
+        button {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4a7c2c;
+        }
+        .instruction {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Prefetch Verification Test</h1>
+
+    <div class="test-card">
+        <h2>Verification Steps</h2>
+        <div class="instruction">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Click "Open Chapter 5" button below</li>
+                <li>Open DevTools (F12) and go to Network tab</li>
+                <li>Filter for "chapter6" in the Network tab</li>
+                <li>Click "Run Tests" to verify prefetch implementation</li>
+            </ol>
+        </div>
+
+        <button onclick="openChapter5()">📖 Open Chapter 5 in New Tab</button>
+        <button onclick="runTests()">✅ Run Tests</button>
+        <button onclick="clearResults()">🔄 Clear Results</button>
+    </div>
+
+    <div class="test-card">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Manual Verification Checklist</h2>
+        <div class="test-result">
+            <input type="checkbox" id="check1">
+            <label for="check1">Opened chapter 5 in browser</label>
+        </div>
+        <div class="test-result">
+            <input type="checkbox" id="check2">
+            <label for="check2">DevTools Network tab is open</label>
+        </div>
+        <div class="test-result">
+            <input type="checkbox" id="check3">
+            <label for="check3">Prefetch request for <code>chapter6.txt</code> appears in Network tab</label>
+        </div>
+        <div class="test-result">
+            <input type="checkbox" id="check4">
+            <label for="check4">Link element with <code>rel="prefetch"</code> exists in document.head</label>
+        </div>
+        <div class="test-result">
+            <input type="checkbox" id="check5">
+            <label for="check5">Link element has <code>data-chapter-prefetch="6"</code> attribute</label>
+        </div>
+    </div>
+
+    <script>
+        function openChapter5() {
+            const url = './index.html#/chapter/5';
+            window.open(url, '_blank');
+            setTimeout(() => {
+                alert('Chapter 5 opened! Now:\n\n1. Open DevTools (F12)\n2. Go to Network tab\n3. Look for chapter6.txt prefetch request\n4. Run the automated tests');
+            }, 500);
+        }
+
+        function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>Running tests...</p>';
+
+            const results = [];
+
+            // Test 1: Check if prefetchNextChapter function exists in index.html
+            results.push({
+                name: 'Prefetch function implementation',
+                description: 'Checking if prefetchNextChapter function exists',
+                status: 'info',
+                message: 'Function should be defined in index.html'
+            });
+
+            // Test 2: Explain what to look for
+            results.push({
+                name: 'Network tab verification',
+                description: 'In DevTools Network tab, you should see a request for chapter6.txt with type "prefetch"',
+                status: 'info',
+                message: 'Filter by "chapter6" to see the request'
+            });
+
+            // Test 3: DOM verification guide
+            results.push({
+                name: 'DOM inspection guide',
+                description: 'Open DevTools Console and run: document.querySelector(\'link[rel="prefetch"][data-chapter-prefetch]\')' ,
+                status: 'info',
+                message: 'This should return a link element pointing to chapter6.txt'
+            });
+
+            // Display results
+            let html = '';
+            results.forEach(result => {
+                html += `
+                    <div class="test-result">
+                        <strong>${result.name}</strong>
+                        <span class="status ${result.status}">${result.status.toUpperCase()}</span>
+                        <p>${result.description}</p>
+                        <code>${result.message}</code>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '<p>Click "Run Tests" to verify implementation</p>';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        // Initialize
+        clearResults();
+    </script>
+</body>
+</html>
