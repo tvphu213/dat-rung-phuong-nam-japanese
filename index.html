@@ -947,16 +947,17 @@
             updateDropdownSelection(chapter, isJapanese);
 
             // Update navigation button states
-            updateNavigationButtons(chapter);
+            updateNavigationState(chapter);
 
             // Scroll to top
             scrollToTop();
         }
 
         // Update navigation button states based on current chapter
-        function updateNavigationButtons(chapterNum) {
-            const prevButtons = document.querySelectorAll('.prev-btn');
-            const nextButtons = document.querySelectorAll('.next-btn');
+        function updateNavigationState(chapterNum) {
+            const activeTab = document.querySelector('.tab-content.active');
+            const prevButtons = activeTab.querySelectorAll('.prev-btn');
+            const nextButtons = activeTab.querySelectorAll('.next-btn');
 
             // Disable Previous button on chapter 1
             prevButtons.forEach(btn => {
@@ -1013,7 +1014,7 @@
             updateDropdownSelection(chapterNum, isJapanese);
 
             // Update navigation button states
-            updateNavigationButtons(chapterNum);
+            updateNavigationState(chapterNum);
 
             // Load chapter content if not already loaded
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
