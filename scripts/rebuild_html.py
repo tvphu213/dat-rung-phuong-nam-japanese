@@ -828,6 +828,84 @@ def generate_html(vi_dir: pathlib.Path, ja_dir: pathlib.Path) -> str:
     return html
 
 
+# ---------------------------------------------------------------------------
+# Metadata calculation helpers
+# ---------------------------------------------------------------------------
+
+
+def calculate_word_count(text: str) -> int:
+    """Calculate the number of words in the given text.
+
+    Words are separated by whitespace. This function provides a simple
+    word count suitable for both Vietnamese and Japanese text.
+
+    Args:
+        text: The text to count words from.
+
+    Returns:
+        Number of words in the text.
+    """
+    return len(text.split())
+
+
+def calculate_char_count(text: str) -> int:
+    """Calculate the number of characters in the given text.
+
+    Counts all characters including whitespace. This matches the
+    character counting pattern used in validation scripts.
+
+    Args:
+        text: The text to count characters from.
+
+    Returns:
+        Number of characters in the text.
+    """
+    return len(text)
+
+
+def calculate_paragraph_count(content: str | list[str]) -> int:
+    """Calculate the number of paragraphs in the chapter content.
+
+    For Vietnamese content (string), paragraphs are separated by double
+    newlines. For Japanese content (list), each list item is a paragraph.
+
+    Args:
+        content: Chapter content (string for Vietnamese, list for Japanese).
+
+    Returns:
+        Number of paragraphs in the content.
+    """
+    if isinstance(content, list):
+        # Japanese content: list of paragraphs
+        return len(content)
+    else:
+        # Vietnamese content: count paragraphs separated by double newlines
+        paragraphs = [p.strip() for p in content.split("\n\n") if p.strip()]
+        return len(paragraphs)
+
+
+def calculate_estimated_read_time(word_count: int) -> int:
+    """Calculate estimated reading time in minutes based on word count.
+
+    Uses a standard reading speed of 200 words per minute. Reading time
+    is rounded up to the nearest minute, with a minimum of 1 minute.
+
+    Args:
+        word_count: Number of words in the text.
+
+    Returns:
+        Estimated reading time in minutes (minimum 1 minute).
+    """
+    if word_count == 0:
+        return 0
+
+    # Standard reading speed: ~200 words per minute
+    minutes = word_count / 200.0
+
+    # Round up to nearest minute, minimum 1
+    return max(1, int(minutes + 0.5))
+
+
 def generate_chapter_json(
     chapter_num: int,
     title: str,
