@@ -921,20 +921,34 @@ def generate_chapter_json(
         language: Language code ('vi' for Vietnamese, 'ja' for Japanese).
 
     Returns:
-        Dictionary with chapter data in format: {id, title, content, language}.
+        Dictionary with chapter data including metadata fields: id, title, content,
+        language, word_count, char_count, paragraph_count, estimated_read_time.
     """
     # For Vietnamese, content is plain text
     # For Japanese, join paragraphs into HTML with <p> tags
     if language == "ja" and isinstance(content, list):
         formatted_content = "\n".join(f"<p>{para}</p>" for para in content)
+        # For metadata calculation, use the raw text (join paragraphs without HTML tags)
+        raw_text = " ".join(content)
     else:
         formatted_content = content
+        raw_text = content
+
+    # Calculate metadata
+    word_count = calculate_word_count(raw_text)
+    char_count = calculate_char_count(raw_text)
+    paragraph_count = calculate_paragraph_count(content)
+    estimated_read_time = calculate_estimated_read_time(word_count)
 
     return {
         "id": chapter_num,
         "title": title,
         "content": formatted_content,
         "language": language,
+        "word_count": word_count,
+        "char_count": char_count,
+        "paragraph_count": paragraph_count,
+        "estimated_read_time": estimated_read_time,
     }
 
 
