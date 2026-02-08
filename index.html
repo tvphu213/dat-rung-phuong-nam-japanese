@@ -739,6 +739,12 @@
             const chapter = document.getElementById(chapterId);
 
             if (chapter) {
+                // Update URL hash
+                window.location.hash = `#/chapter/${chapterNum}`;
+
+                // Save reading position to localStorage
+                saveReadingPosition();
+
                 // Load chapter if not already loaded
                 if (chapter.dataset.loaded !== 'true') {
                     await loadChapter(chapterNum, isJapanese);
@@ -947,6 +953,9 @@
             // Update URL hash
             window.location.hash = `#/chapter/${chapter}`;
 
+            // Save reading position to localStorage
+            saveReadingPosition();
+
             // Load chapter content if not already loaded
             await loadChapter(chapter, isJapanese);
 
@@ -996,9 +1005,44 @@
             }
         }
 
+        // Save current chapter to localStorage
+        function saveReadingPosition() {
+            const currentChapter = getChapterFromURL();
+            try {
+                localStorage.setItem('currentChapter', currentChapter.toString());
+            } catch (error) {
+                // Silently fail if localStorage is not available
+            }
+        }
+
+        // Load saved chapter from localStorage
+        function loadReadingPosition() {
+            try {
+                const savedChapter = localStorage.getItem('currentChapter');
+                if (savedChapter) {
+                    const chapterNum = parseInt(savedChapter, 10);
+                    if (!isNaN(chapterNum) && chapterNum >= 1 && chapterNum <= 20) {
+                        return chapterNum;
+                    }
+                }
+            } catch (error) {
+                // Silently fail if localStorage is not available
+            }
+            return null;
+        }
+
         // Auto-load chapter from URL on page load
         document.addEventListener('DOMContentLoaded', function () {
-            const chapterNum = getChapterFromURL();
+            // Check for saved reading position first
+            const savedChapter = loadReadingPosition();
+            let chapterNum = getChapterFromURL();
+
+            // If no chapter in URL and there's a saved position, use it
+            if ((window.location.hash === '' || window.location.hash === '#' || window.location.hash === '#/') && savedChapter) {
+                chapterNum = savedChapter;
+                window.location.hash = `#/chapter/${chapterNum}`;
+            }
+
             const isJapanese = false;
             displaySingleChapter(chapterNum, isJapanese);
 
