@@ -702,16 +702,21 @@
             const japaneseContent = document.getElementById('japanese-content');
             const tabButtons = document.querySelectorAll('.tab-button');
 
+            // Get current chapter before switching
+            const currentChapter = getChapterFromURL();
+
             if (tab === 'vietnamese') {
                 vietnameseContent.classList.add('active');
                 japaneseContent.classList.remove('active');
                 tabButtons[0].classList.add('active');
                 tabButtons[1].classList.remove('active');
+                updateDropdownSelection(currentChapter, false);
             } else {
                 vietnameseContent.classList.remove('active');
                 japaneseContent.classList.add('active');
                 tabButtons[0].classList.remove('active');
                 tabButtons[1].classList.add('active');
+                updateDropdownSelection(currentChapter, true);
             }
 
             scrollToTop();
@@ -884,11 +889,64 @@
             scrollToChapter(chapterNum);
         });
 
+        // Populate chapter dropdown with all chapter titles
+        function populateChapterDropdown(isJapanese) {
+            const activeTab = document.querySelector('.tab-content.active');
+            const dropdowns = activeTab.querySelectorAll('.chapter-selector');
+
+            // Get all chapter titles from the TOC
+            const tocItems = activeTab.querySelectorAll('.toc-item');
+
+            dropdowns.forEach(dropdown => {
+                // Clear existing options
+                dropdown.innerHTML = '';
+
+                // Add all chapters as options
+                tocItems.forEach((item, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = item.textContent;
+                    dropdown.appendChild(option);
+                });
+            });
+        }
+
+        // Update dropdown selection to match current chapter
+        function updateDropdownSelection(chapterNum, isJapanese) {
+            const activeTab = document.querySelector('.tab-content.active');
+            const dropdowns = activeTab.querySelectorAll('.chapter-selector');
+
+            dropdowns.forEach(dropdown => {
+                dropdown.value = chapterNum;
+            });
+        }
+
         // Auto-load chapter from URL on page load
         document.addEventListener('DOMContentLoaded', function () {
             const chapterNum = getChapterFromURL();
             const isJapanese = false;
             displaySingleChapter(chapterNum, isJapanese);
+
+            // Populate dropdowns for both languages
+            populateChapterDropdown(false); // Vietnamese
+
+            // Populate Japanese dropdowns
+            const japaneseContent = document.getElementById('japanese-content');
+            const japaneseDropdowns = japaneseContent.querySelectorAll('.chapter-selector');
+            const japaneseTocItems = japaneseContent.querySelectorAll('.toc-item');
+
+            japaneseDropdowns.forEach(dropdown => {
+                dropdown.innerHTML = '';
+                japaneseTocItems.forEach((item, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = item.textContent;
+                    dropdown.appendChild(option);
+                });
+            });
+
+            // Set initial selection
+            updateDropdownSelection(chapterNum, isJapanese);
 
             // Load chapter content if not already loaded
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
