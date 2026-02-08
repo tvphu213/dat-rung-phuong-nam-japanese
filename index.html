@@ -690,6 +690,33 @@
             }
         }
 
+        // URL parsing and validation functions
+        function getChapterFromURL() {
+            const hash = window.location.hash;
+
+            // Default to chapter 1 if no hash
+            if (!hash || hash === '' || hash === '#' || hash === '#/') {
+                return 1;
+            }
+
+            // Parse hash format: #/chapter/5
+            const match = hash.match(/^#\/chapter\/(\d+)$/);
+
+            if (!match) {
+                // Invalid format, return default
+                return 1;
+            }
+
+            const chapterNum = parseInt(match[1], 10);
+
+            // Validate chapter number (must be between 1 and 20)
+            if (isNaN(chapterNum) || chapterNum < 1 || chapterNum > 20) {
+                return 1;
+            }
+
+            return chapterNum;
+        }
+
         // Show/hide back-to-top button and update reading progress
         window.addEventListener('scroll', function () {
             const backToTop = document.querySelector('.back-to-top');
