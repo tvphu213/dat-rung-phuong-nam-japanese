@@ -117,43 +117,6 @@
             }
         }
 
-        .toc {
-            background: var(--sand-beige);
-            padding: 2rem;
-            border-bottom: 2px solid var(--earth-brown);
-        }
-
-        .toc h2 {
-            color: var(--forest-green);
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--light-green);
-            padding-bottom: 0.5rem;
-        }
-
-        .toc-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 0.8rem;
-        }
-
-        .toc-item {
-            background: white;
-            padding: 0.8rem 1rem;
-            border-left: 4px solid var(--light-green);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 0 4px 4px 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .toc-item:hover {
-            background: var(--light-green);
-            color: white;
-            transform: translateX(5px);
-            border-left-color: var(--accent-gold);
-        }
-
         .chapter {
             padding: 3rem 2rem;
             max-width: 800px;
@@ -233,10 +196,6 @@
 
             .chapter-content {
                 font-size: 1rem;
-            }
-
-            .toc-grid {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -411,32 +370,6 @@
 
         <!-- Vietnamese Content -->
         <div id="vietnamese-content" class="tab-content active">
-            <div class="toc">
-                <h2>📚 Mục lục</h2>
-                <div class="toc-grid">
-                    <div class="toc-item" onclick="scrollToChapter(1)">Chương 1: Xóm chợ nhỏ một vùng quê xa lạ</div>
-                    <div class="toc-item" onclick="scrollToChapter(2)">Chương 2: Trong tửu quán</div>
-                    <div class="toc-item" onclick="scrollToChapter(3)">Chương 3: Ông lão bán rắn</div>
-                    <div class="toc-item" onclick="scrollToChapter(4)">Chương 4: Đêm kinh khủng</div>
-                    <div class="toc-item" onclick="scrollToChapter(5)">Chương 5: Ôn lại ngày cũ</div>
-                    <div class="toc-item" onclick="scrollToChapter(6)">Chương 6: Bước đầu cuộc sống lưu lạc</div>
-                    <div class="toc-item" onclick="scrollToChapter(7)">Chương 7: Gia đình bố nuôi tôi</div>
-                    <div class="toc-item" onclick="scrollToChapter(8)">Chương 8: Đi câu rắn</div>
-                    <div class="toc-item" onclick="scrollToChapter(9)">Chương 9: Đi lấy mật</div>
-                    <div class="toc-item" onclick="scrollToChapter(10)">Chương 10: Trong lều người đàn ông cô độc giữa rừng</div>
-                    <div class="toc-item" onclick="scrollToChapter(11)">Chương 11: Rùng cháy</div>
-                    <div class="toc-item" onclick="scrollToChapter(12)">Chương 12: Chạm trán với hổ</div>
-                    <div class="toc-item" onclick="scrollToChapter(13)">Chương 13: Cái Chết Của Võ Tòng</div>
-                    <div class="toc-item" onclick="scrollToChapter(14)">Chương 14: Mũi tên thù</div>
-                    <div class="toc-item" onclick="scrollToChapter(15)">Chương 15: Phường săn cá sấu</div>
-                    <div class="toc-item" onclick="scrollToChapter(16)">“Chương 16: Qua sróc Miên</div>
-                    <div class="toc-item" onclick="scrollToChapter(17)">Chương 17: Sân chim</div>
-                    <div class="toc-item" onclick="scrollToChapter(18)">Chương 18: Rừng đước Cà Mau</div>
-                    <div class="toc-item" onclick="scrollToChapter(19)">Chương 19: Du kích trong rừng</div>
-                    <div class="toc-item" onclick="scrollToChapter(20)">Chương 20: Lên đường chiến đấu</div>
-                </div>
-            </div>
-
             <div class="pagination-controls">
                 <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
                 <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
@@ -553,32 +486,6 @@
 
         <!-- Japanese Content -->
         <div id="japanese-content" class="tab-content">
-            <div class="toc">
-                <h2>📚 目次</h2>
-                <div class="toc-grid">
-                    <div class="toc-item" onclick="scrollToChapter(1)">第一章:見知らぬ田舎の小さな市場村</div>
-                    <div class="toc-item" onclick="scrollToChapter(2)">第二章:居酒屋にて</div>
-                    <div class="toc-item" onclick="scrollToChapter(3)">第三章:蛇売りの老人</div>
-                    <div class="toc-item" onclick="scrollToChapter(4)">第四章:恐ろしい夜</div>
-                    <div class="toc-item" onclick="scrollToChapter(5)">第五章:昔日を振り返る</div>
-                    <div class="toc-item" onclick="scrollToChapter(6)">第六章:流浪生活の始まり</div>
-                    <div class="toc-item" onclick="scrollToChapter(7)">第七章:養父母の家族</div>
-                    <div class="toc-item" onclick="scrollToChapter(8)">第八章:蛇釣りに行く</div>
-                    <div class="toc-item" onclick="scrollToChapter(9)">第9章:蜜を採りに</div>
-                    <div class="toc-item" onclick="scrollToChapter(10)">第10章:森の奥の孤独な男の小屋で</div>
-                    <div class="toc-item" onclick="scrollToChapter(11)">第11章:森が燃える</div>
-                    <div class="toc-item" onclick="scrollToChapter(12)">第12章:虎との遭遇</div>
-                    <div class="toc-item" onclick="scrollToChapter(13)">第13章:ヴォ・トンの死</div>
-                    <div class="toc-item" onclick="scrollToChapter(14)">第14章:復讐の矢</div>
-                    <div class="toc-item" onclick="scrollToChapter(15)">第15章:ワニ狩りの仲間</div>
-                    <div class="toc-item" onclick="scrollToChapter(16)">第16章:ミエン人の村を越えて</div>
-                    <div class="toc-item" onclick="scrollToChapter(17)">第17章:鳥の広場</div>
-                    <div class="toc-item" onclick="scrollToChapter(18)">第18章:カマウのマングローブ林</div>
-                    <div class="toc-item" onclick="scrollToChapter(19)">第19章:森の中のゲリラ</div>
-                    <div class="toc-item" onclick="scrollToChapter(20)">第20章:戦いへ出発</div>
-                </div>
-            </div>
-
             <div class="pagination-controls">
                 <button class="pagination-btn prev-btn" onclick="navigatePrevious()">← Previous</button>
                 <select class="chapter-selector" onchange="navigateToChapter(this.value)"></select>
@@ -910,18 +817,18 @@
             const activeTab = document.querySelector('.tab-content.active');
             const dropdowns = activeTab.querySelectorAll('.chapter-selector');
 
-            // Get all chapter titles from the TOC
-            const tocItems = activeTab.querySelectorAll('.toc-item');
+            // Get all chapter titles from the chapter elements
+            const chapterTitles = activeTab.querySelectorAll('.chapter-title');
 
             dropdowns.forEach(dropdown => {
                 // Clear existing options
                 dropdown.innerHTML = '';
 
                 // Add all chapters as options
-                tocItems.forEach((item, index) => {
+                chapterTitles.forEach((title, index) => {
                     const option = document.createElement('option');
                     option.value = index + 1;
-                    option.textContent = item.textContent;
+                    option.textContent = title.textContent;
                     dropdown.appendChild(option);
                 });
             });
@@ -1052,14 +959,14 @@
             // Populate Japanese dropdowns
             const japaneseContent = document.getElementById('japanese-content');
             const japaneseDropdowns = japaneseContent.querySelectorAll('.chapter-selector');
-            const japaneseTocItems = japaneseContent.querySelectorAll('.toc-item');
+            const japaneseChapterTitles = japaneseContent.querySelectorAll('.chapter-title');
 
             japaneseDropdowns.forEach(dropdown => {
                 dropdown.innerHTML = '';
-                japaneseTocItems.forEach((item, index) => {
+                japaneseChapterTitles.forEach((title, index) => {
                     const option = document.createElement('option');
                     option.value = index + 1;
-                    option.textContent = item.textContent;
+                    option.textContent = title.textContent;
                     dropdown.appendChild(option);
                 });
             });
