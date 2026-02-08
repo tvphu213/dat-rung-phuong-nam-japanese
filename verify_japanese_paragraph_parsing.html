@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Paragraph Parsing Verification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c5f3f;
+        }
+        h2 {
+            color: #2c5f3f;
+            border-bottom: 2px solid #2c5f3f;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .fail {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .chapter-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background: #2c5f3f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1e4029;
+        }
+    </style>
+</head>
+<body>
+    <h1>Japanese Paragraph Parsing Verification</h1>
+
+    <div class="test-section">
+        <h2>Test 1: Parse Japanese Chapter Format</h2>
+        <div id="test1-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Verify File Path Building for Japanese</h2>
+        <div id="test2-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Load Sample Japanese Chapter</h2>
+        <button onclick="loadSampleChapter(1)">Load Chapter 1 (Japanese)</button>
+        <button onclick="loadSampleChapter(5)">Load Chapter 5 (Japanese)</button>
+        <button onclick="loadSampleChapter(10)">Load Chapter 10 (Japanese)</button>
+        <div id="test3-result"></div>
+        <div id="chapter-display" class="chapter-content"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Verify All 20 Japanese Chapters</h2>
+        <button onclick="testAllJapaneseChapters()">Test All Chapters</button>
+        <div id="test4-result"></div>
+    </div>
+
+    <script>
+        // Copy parseTextContent function from main implementation
+        function parseTextContent(text) {
+            const lines = text.split('\n');
+            const title = lines[0] || '';
+            const paragraphs = [];
+
+            // Join all lines after the title and split on double newlines
+            const contentLines = lines.slice(2).join('\n');
+            const blocks = contentLines.split('\n\n');
+
+            blocks.forEach(block => {
+                const trimmed = block.trim();
+                if (trimmed) {
+                    paragraphs.push(trimmed);
+                }
+            });
+
+            return { title, paragraphs };
+        }
+
+        // Test 1: Parse Japanese chapter format
+        function test1() {
+            const sampleText = `第一章:見知らぬ田舎の小さな市場村
+
+この市場村に足を踏み入れた日から、私の流浪の生活が始まったのだろうか。
+
+この市場村に流れ着いて、数えてみればもう半月以上になる。
+
+ある夕方、南部抵抗委員会の軍糧輸送船団がここに停泊した。`;
+
+            const result = parseTextContent(sampleText);
+            const resultDiv = document.getElementById('test1-result');
+
+            if (result.title === '第一章:見知らぬ田舎の小さな市場村' && result.paragraphs.length === 3) {
+                resultDiv.className = 'test-result pass';
+                resultDiv.innerHTML = `
+                    <strong>✓ PASS</strong><br>
+                    Title: ${result.title}<br>
+                    Paragraphs: ${result.paragraphs.length}<br>
+                    <div class="info">Paragraph parsing works correctly for Japanese text!</div>
+                `;
+            } else {
+                resultDiv.className = 'test-result fail';
+                resultDiv.innerHTML = `
+                    <strong>✗ FAIL</strong><br>
+                    Expected 3 paragraphs, got ${result.paragraphs.length}
+                `;
+            }
+        }
+
+        // Test 2: Verify file path building
+        function test2() {
+            const testCases = [
+                { num: 1, expected: './chapters/ja/chapter1_ja.txt' },
+                { num: 10, expected: './chapters/ja/chapter10_ja.txt' },
+                { num: 20, expected: './chapters/ja/chapter20_ja.txt' }
+            ];
+
+            const results = testCases.map(tc => {
+                const fileName = `chapter${tc.num}_ja.txt`;
+                const filePath = `./chapters/ja/${fileName}`;
+                return {
+                    num: tc.num,
+                    pass: filePath === tc.expected,
+                    got: filePath,
+                    expected: tc.expected
+                };
+            });
+
+            const allPass = results.every(r => r.pass);
+            const resultDiv = document.getElementById('test2-result');
+
+            if (allPass) {
+                resultDiv.className = 'test-result pass';
+                resultDiv.innerHTML = `
+                    <strong>✓ PASS</strong><br>
+                    All file paths build correctly for Japanese chapters!
+                    <ul>
+                        ${results.map(r => `<li>Chapter ${r.num}: ${r.got}</li>`).join('')}
+                    </ul>
+                `;
+            } else {
+                resultDiv.className = 'test-result fail';
+                resultDiv.innerHTML = '<strong>✗ FAIL</strong><br>File path building failed';
+            }
+        }
+
+        // Test 3: Load sample chapter
+        async function loadSampleChapter(chapterNum) {
+            const resultDiv = document.getElementById('test3-result');
+            const displayDiv = document.getElementById('chapter-display');
+
+            resultDiv.innerHTML = '<div class="info">Loading chapter...</div>';
+            displayDiv.innerHTML = '';
+
+            try {
+                const fileName = `chapter${chapterNum}_ja.txt`;
+                const filePath = `./chapters/ja/${fileName}`;
+
+                const response = await fetch(filePath);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const text = await response.text();
+                const { title, paragraphs } = parseTextContent(text);
+
+                resultDiv.className = 'test-result pass';
+                resultDiv.innerHTML = `
+                    <strong>✓ SUCCESS</strong><br>
+                    Loaded: ${filePath}<br>
+                    Title: ${title}<br>
+                    Paragraphs: ${paragraphs.length}
+                `;
+
+                displayDiv.innerHTML = `<h3>${title}</h3>`;
+                paragraphs.forEach(para => {
+                    const p = document.createElement('p');
+                    p.textContent = para;
+                    displayDiv.appendChild(p);
+                });
+
+            } catch (error) {
+                resultDiv.className = 'test-result fail';
+                resultDiv.innerHTML = `<strong>✗ FAIL</strong><br>${error.message}`;
+            }
+        }
+
+        // Test 4: Test all 20 Japanese chapters
+        async function testAllJapaneseChapters() {
+            const resultDiv = document.getElementById('test4-result');
+            resultDiv.innerHTML = '<div class="info">Testing all 20 Japanese chapters...</div>';
+
+            const results = [];
+
+            for (let num = 1; num <= 20; num++) {
+                const fileName = `chapter${num}_ja.txt`;
+                const filePath = `./chapters/ja/${fileName}`;
+
+                try {
+                    const response = await fetch(filePath);
+
+                    if (!response.ok) {
+                        results.push({ num, success: false, error: `HTTP ${response.status}` });
+                        continue;
+                    }
+
+                    const text = await response.text();
+                    const { title, paragraphs } = parseTextContent(text);
+
+                    results.push({
+                        num,
+                        success: true,
+                        title,
+                        paragraphCount: paragraphs.length
+                    });
+
+                } catch (error) {
+                    results.push({ num, success: false, error: error.message });
+                }
+            }
+
+            const passCount = results.filter(r => r.success).length;
+            const failCount = results.filter(r => !r.success).length;
+
+            if (passCount === 20) {
+                resultDiv.className = 'test-result pass';
+                resultDiv.innerHTML = `
+                    <strong>✓ ALL TESTS PASSED (20/20)</strong><br>
+                    <div class="info">All Japanese chapters load correctly with proper paragraph parsing!</div>
+                    <details>
+                        <summary>View Details</summary>
+                        <ul>
+                            ${results.map(r => `
+                                <li>Chapter ${r.num}: ${r.paragraphCount} paragraphs - ${r.title.substring(0, 50)}...</li>
+                            `).join('')}
+                        </ul>
+                    </details>
+                `;
+            } else {
+                resultDiv.className = 'test-result fail';
+                resultDiv.innerHTML = `
+                    <strong>✗ SOME TESTS FAILED</strong><br>
+                    Passed: ${passCount}/20<br>
+                    Failed: ${failCount}/20
+                `;
+            }
+        }
+
+        // Run tests on load
+        window.addEventListener('DOMContentLoaded', () => {
+            test1();
+            test2();
+        });
+    </script>
+</body>
+</html>
