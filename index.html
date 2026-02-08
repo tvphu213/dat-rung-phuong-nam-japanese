@@ -752,10 +752,18 @@
             scrollToChapter(chapterNum);
         });
 
-        // Auto-load Chapter 1 on page load
+        // Auto-load chapter from URL on page load
         document.addEventListener('DOMContentLoaded', function () {
-            displaySingleChapter(1, false);
-            loadChapter(1, false);
+            const chapterNum = getChapterFromURL();
+            const isJapanese = false;
+            displaySingleChapter(chapterNum, isJapanese);
+
+            // Load chapter content if not already loaded
+            const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
+            const chapterElement = document.getElementById(chapterId);
+            if (chapterElement && chapterElement.dataset.loaded !== 'true') {
+                loadChapter(chapterNum, isJapanese);
+            }
         });
     </script>
 </body>
