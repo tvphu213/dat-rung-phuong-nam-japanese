@@ -697,7 +697,7 @@
             return { title, paragraphs };
         }
 
-        // Load chapter content dynamically from .txt files
+        // Load chapter content dynamically from .json files
         async function loadChapter(chapterNum, isJapanese) {
             const chapterId = isJapanese ? `chapter-ja-${chapterNum}` : `chapter-${chapterNum}`;
             const chapterElement = document.getElementById(chapterId);
@@ -718,9 +718,9 @@
             contentElement.innerHTML = `<div class="loading-spinner"><div class="spinner"></div><p class="loading-text">${loadingText}</p></div>`;
 
             try {
-                // Build file path
-                const fileName = isJapanese ? `chapter${chapterNum}_ja.txt` : `chapter${chapterNum}.txt`;
-                const filePath = isJapanese ? `./chapters/ja/${fileName}` : `./chapters/vi/${fileName}`;
+                // Build file path for JSON
+                const fileName = isJapanese ? `chapter-ja-${chapterNum}.json` : `chapter-${chapterNum}.json`;
+                const filePath = `./chapters/json/${fileName}`;
 
                 // Fetch chapter content
                 const response = await fetch(filePath);
@@ -729,7 +729,8 @@
                     throw new Error(`Failed to load chapter: ${response.status} ${response.statusText}`);
                 }
 
-                const text = await response.text();
+                const chapterData = await response.json();
+                const text = chapterData.content;
                 const { paragraphs } = parseTextContent(text);
 
                 // Populate DOM with paragraphs
@@ -964,9 +965,9 @@
                 return;
             }
 
-            // Build file path for next chapter
-            const fileName = isJapanese ? `chapter${nextChapter}_ja.txt` : `chapter${nextChapter}.txt`;
-            const filePath = isJapanese ? `./chapters/ja/${fileName}` : `./chapters/vi/${fileName}`;
+            // Build file path for next chapter (JSON)
+            const fileName = isJapanese ? `chapter-ja-${nextChapter}.json` : `chapter-${nextChapter}.json`;
+            const filePath = `./chapters/json/${fileName}`;
 
             // Create prefetch link element
             const prefetchLink = document.createElement('link');
