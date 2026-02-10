@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Japanese Chapter 1 Rendering</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        .chapter-content {
+            white-space: pre-wrap;
+        }
+        .chapter-content p {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f5f5f5;
+            border-left: 3px solid #4CAF50;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .paragraph-count {
+            font-weight: bold;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <h1>日本語 Chapter 1 レンダリングテスト</h1>
+
+    <div class="info">
+        <p><strong>このテストページの目的:</strong></p>
+        <ul>
+            <li>JSON ファイルから日本語 Chapter 1 を読み込む</li>
+            <li>JavaScript で段落を解析</li>
+            <li>各段落を &lt;p&gt; タグでレンダリング</li>
+            <li>段落間に適切な余白があることを確認</li>
+        </ul>
+        <p class="paragraph-count">段落数: <span id="paragraph-count">読み込み中...</span></p>
+    </div>
+
+    <div class="chapter-content" id="content"></div>
+
+    <script>
+        function parseTextContent(text) {
+            const lines = text.trim().split('\n');
+            const paragraphs = [];
+
+            let currentParagraph = '';
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.trim() === '') {
+                    if (currentParagraph.trim()) {
+                        paragraphs.push(currentParagraph.trim());
+                        currentParagraph = '';
+                    }
+                } else {
+                    currentParagraph += line;
+                }
+            }
+
+            if (currentParagraph.trim()) {
+                paragraphs.push(currentParagraph.trim());
+            }
+
+            return { paragraphs };
+        }
+
+        async function loadChapter() {
+            try {
+                const response = await fetch('./chapters/json/chapter-ja-1.json');
+                const data = await response.json();
+                const { paragraphs } = parseTextContent(data.content);
+
+                // Update paragraph count
+                document.getElementById('paragraph-count').textContent = paragraphs.length;
+
+                // Render paragraphs
+                const contentElement = document.getElementById('content');
+                contentElement.innerHTML = '';
+
+                paragraphs.forEach((paragraph, index) => {
+                    const p = document.createElement('p');
+                    p.textContent = `[段落 ${index + 1}] ${paragraph}`;
+                    contentElement.appendChild(p);
+                });
+
+                console.log('✓ Loaded successfully');
+                console.log('✓ Paragraphs:', paragraphs.length);
+                paragraphs.forEach((p, i) => {
+                    console.log(`  Paragraph ${i + 1}: ${p.substring(0, 50)}...`);
+                });
+
+            } catch (error) {
+                console.error('Error loading chapter:', error);
+                document.getElementById('content').innerHTML =
+                    '<p style="color: red;">エラー: Chapter を読み込めませんでした</p>';
+            }
+        }
+
+        // Load when page is ready
+        loadChapter();
+    </script>
+</body>
+</html>
