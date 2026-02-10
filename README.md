@@ -1,4 +1,4 @@
-# Đất Rừng Phương Nam (南部の森と大地)
+# Đất Rừng Phương Nam (南方の歌)
 
 Vietnamese classic novel "Đất Rừng Phương Nam" by Đoàn Giỏi with Japanese translation.
 
